@@ -21,21 +21,20 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        File csvFile = getCsvFile();
-        List<QuestionDto> beans = getQuestionDtoFromCsvFile(csvFile);
-
-        return beans.stream()
+        return getQuestionDtoFromCsvFile(getCsvFile())
+                .stream()
                 .map(QuestionDto::toDomainObject)
                 .collect(Collectors.toList());
     }
 
     private List<QuestionDto> getQuestionDtoFromCsvFile(File csvFile) {
         try {
-            return new CsvToBeanBuilder(new FileReader(csvFile))
+            return new CsvToBeanBuilder<QuestionDto>(new FileReader(csvFile))
                     .withType(QuestionDto.class)
                     .withSkipLines(1)
                     .withSeparator(';')
-                    .build().parse();
+                    .build()
+                    .parse();
         } catch (FileNotFoundException e) {
             throw new QuestionReadException(e.getMessage());
         }
@@ -44,16 +43,14 @@ public class CsvQuestionDao implements QuestionDao {
     private File getCsvFile() {
         String testFileName = fileNameProvider.getTestFileName();
         URL resource = getClass().getClassLoader().getResource(testFileName);
-        File file = null;
         if (resource == null) {
-            throw new IllegalArgumentException("File " + testFileName + " not found!");
+            throw new QuestionReadException("File " + testFileName + " not found!");
         } else {
             try {
-                file = new File(resource.toURI());
+                return new File(resource.toURI());
             } catch (URISyntaxException e) {
                 throw new QuestionReadException(e.getMessage());
             }
         }
-        return file;
     }
 }

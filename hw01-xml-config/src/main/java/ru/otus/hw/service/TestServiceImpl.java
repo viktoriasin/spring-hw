@@ -5,8 +5,6 @@ import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
@@ -18,12 +16,10 @@ public class TestServiceImpl implements TestService {
     public void executeTest() {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
-        // Получить вопросы из дао и вывести их с вариантами ответов
-        List<Question> questionList = questionDao.findAll();
         int questionCount = 0;
-        for (Question question : questionList) {
+        for (Question question : questionDao.findAll()) {
             ioService.printFormattedLine("Question №%d: %s", ++questionCount, question.text());
-            if (question.answers() != null) {
+            if (question.answers() != null && !question.answers().isEmpty()) {
                 ioService.printFormattedLine("Possible answers:");
                 int answerCount = 0;
                 for (Answer answer : question.answers()) {
