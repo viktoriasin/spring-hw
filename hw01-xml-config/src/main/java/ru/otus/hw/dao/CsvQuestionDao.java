@@ -19,14 +19,13 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        return getQuestionDtoFromCsvFile()
+        return getQuestionDtoFromCsvFile(fileNameProvider.getTestFileName())
                 .stream()
                 .map(QuestionDto::toDomainObject)
                 .collect(Collectors.toList());
     }
 
-    private List<QuestionDto> getQuestionDtoFromCsvFile() {
-        String testFileName = fileNameProvider.getTestFileName();
+    private List<QuestionDto> getQuestionDtoFromCsvFile(String testFileName) {
         ClassLoader classLoader = getClass().getClassLoader();
         try (var in = new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(testFileName)))) {
             return new CsvToBeanBuilder<QuestionDto>(in)
