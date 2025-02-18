@@ -49,7 +49,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -77,6 +76,7 @@
             <optional>true</optional>
             <version>${lombok.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
