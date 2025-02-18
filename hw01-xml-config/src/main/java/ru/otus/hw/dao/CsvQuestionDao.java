@@ -5,14 +5,11 @@ import lombok.RequiredArgsConstructor;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
-import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -21,36 +18,24 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        return getQuestionDtoFromCsvFile(getCsvFile())
+        return getQuestionDtoFromCsvFile()
                 .stream()
                 .map(QuestionDto::toDomainObject)
                 .collect(Collectors.toList());
     }
 
-    private List<QuestionDto> getQuestionDtoFromCsvFile(File csvFile) {
-        try {
-            return new CsvToBeanBuilder<QuestionDto>(new FileReader(csvFile))
+    private List<QuestionDto> getQuestionDtoFromCsvFile() {
+        String testFileName = fileNameProvider.getTestFileName();
+        ClassLoader classLoader = getClass().getClassLoader();
+        try (var in = new InputStreamReader(Objects.requireNonNull(classLoader.getResourceAsStream(testFileName)))) {
+            return new CsvToBeanBuilder<QuestionDto>(in)
                     .withType(QuestionDto.class)
                     .withSkipLines(1)
                     .withSeparator(';')
                     .build()
                     .parse();
-        } catch (FileNotFoundException e) {
-            throw new QuestionReadException(e.getMessage());
-        }
-    }
-
-    private File getCsvFile() {
-        String testFileName = fileNameProvider.getTestFileName();
-        URL resource = getClass().getClassLoader().getResource(testFileName);
-        if (resource == null) {
-            throw new QuestionReadException("File " + testFileName + " not found!");
-        } else {
-            try {
-                return new File(resource.toURI());
-            } catch (URISyntaxException e) {
-                throw new QuestionReadException(e.getMessage());
-            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
