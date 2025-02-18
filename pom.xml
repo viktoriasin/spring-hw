@@ -4,9 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Project Object Model -->
-    <!-- All POMs extend the Super POM unless explicitly set -->
-    <!--parent>*</parent-->
 
     <groupId>ru.sinvic</groupId>
     <artifactId>2025-01-otus-spring-sinditskaya</artifactId>
@@ -22,6 +19,7 @@
 
     <modules>
         <module>hw01-xml-config</module>
+        <module>hw02-annotation-config</module>
     </modules>
 
     <properties>
