@@ -40,14 +40,14 @@ public class StreamsIOService implements IOService {
     @Override
     public String readStringWithPrompt(String prompt) {
         printLine(prompt);
-        return scanner.nextLine();
+        return readString();
     }
 
     @Override
     public int readIntForRange(int min, int max, String errorMessage) {
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             try {
-                var stringValue = scanner.nextLine();
+                var stringValue = readString();
                 int intValue = Integer.parseInt(stringValue);
                 if (intValue < min || intValue > max) {
                     throw new IllegalArgumentException();

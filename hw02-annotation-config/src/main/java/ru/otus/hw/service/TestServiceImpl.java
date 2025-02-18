@@ -27,30 +27,35 @@ public class TestServiceImpl implements TestService {
         int questionCount = 0;
         for (var question : questions) {
             ioService.printFormattedLine("Question №%d: %s", ++questionCount, question.text());
-            if (question.answers() != null && !question.answers().isEmpty()) {
-                int validAnswerNumber = printAnswersAndDetectRightAnswerNumber(question.answers());
-                testResult.applyAnswer(question, validAnswerNumber == getStudentAnswer(question.answers().size()));
+            List<Answer> answers = question.answers();
+            if (answers != null && !answers.isEmpty()) {
+                printAnswers(answers);
+                testResult.applyAnswer(question, getRightAnswerNumber(answers) == getStudentAnswer(answers.size()));
             }
             ioService.printLine("");
         }
         return testResult;
     }
 
-    private int printAnswersAndDetectRightAnswerNumber(List<Answer> answers) {
+    private void printAnswers(List<Answer> answers) {
         ioService.printFormattedLine("Possible answers:");
         int answerCount = 0;
-        int validAnswerNumber = -1;
         for (Answer answer : answers) {
             ioService.printFormattedLine("%d) %s", ++answerCount, answer.text());
-            if (answer.isCorrect()) {
-                validAnswerNumber = answerCount;
+        }
+    }
+
+    private int getRightAnswerNumber(List<Answer> answers) {
+        for (int i = 0; i < answers.size(); i++) {
+            if (answers.get(i).isCorrect()) {
+                return i + 1;
             }
         }
-        return validAnswerNumber;
+        return -1;
     }
 
     private int getStudentAnswer(int answerCount) {
         String errorMessage = "You must enter the number of one of the answer options";
-        return ioService.readIntForRangeWithPrompt(1, answerCount, "Enter your question: ", errorMessage);
+        return ioService.readIntForRangeWithPrompt(1, answerCount, "Enter your answer: ", errorMessage);
     }
 }
