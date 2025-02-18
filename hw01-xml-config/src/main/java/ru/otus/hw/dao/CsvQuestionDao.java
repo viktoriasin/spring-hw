@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
+import ru.otus.hw.exceptions.QuestionReadException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,6 +37,10 @@ public class CsvQuestionDao implements QuestionDao {
                     .parse();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException nullPointerException) {
+            throw new QuestionReadException("File " + testFileName + " could not be found.");
+        } catch (Exception e) {
+            throw new QuestionReadException(e.getMessage());
         }
     }
 }
