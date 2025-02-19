@@ -21,6 +21,7 @@
     </developers>
 
     <modules>
+        <module>hw01-xml-config</module>
     </modules>
 
     <properties>
@@ -33,6 +34,9 @@
         <minimal.maven.version>3.6.3</minimal.maven.version>
         <com.google.guava.version>33.2.0-jre</com.google.guava.version>
         <commons-io.version>2.16.1</commons-io.version>
+        <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
+        <checkstyle.version>10.15.0</checkstyle.version>
+        <checkstyle.config.url>https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml</checkstyle.config.url>
     </properties>
 
     <dependencyManagement>
@@ -91,6 +95,30 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven-assembly-plugin.version}</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${checkstyle-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <configLocation>${checkstyle.config.url}</configLocation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
