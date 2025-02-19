@@ -30,7 +30,8 @@ public class TestServiceImpl implements TestService {
             List<Answer> answers = question.answers();
             if (answers != null && !answers.isEmpty()) {
                 printAnswers(answers);
-                testResult.applyAnswer(question, getRightAnswerNumber(answers) == getStudentAnswer(answers.size()));
+                testResult.applyAnswer(question,
+                        getRightAnswerNumber(answers) == getStudentAnswerNumber(answers.size()));
             }
             ioService.printLine("");
         }
@@ -54,7 +55,7 @@ public class TestServiceImpl implements TestService {
         return -1;
     }
 
-    private int getStudentAnswer(int answerCount) {
+    private int getStudentAnswerNumber(int answerCount) {
         String errorMessage = "You must enter the number of one of the answer options";
         return ioService.readIntForRangeWithPrompt(1, answerCount, "Enter your answer: ", errorMessage);
     }
