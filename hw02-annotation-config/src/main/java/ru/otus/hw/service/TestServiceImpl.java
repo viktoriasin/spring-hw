@@ -30,8 +30,8 @@ public class TestServiceImpl implements TestService {
             List<Answer> answers = question.answers();
             if (answers != null && !answers.isEmpty()) {
                 printAnswers(answers);
-                testResult.applyAnswer(question,
-                        getRightAnswerNumber(answers) == getStudentAnswerNumber(answers.size()));
+                int studentAnswerNumber = getStudentAnswerNumber(answers.size());
+                testResult.applyAnswer(question, answers.get(studentAnswerNumber - 1).isCorrect());
             }
             ioService.printLine("");
         }
@@ -44,15 +44,6 @@ public class TestServiceImpl implements TestService {
         for (Answer answer : answers) {
             ioService.printFormattedLine("%d) %s", ++answerCount, answer.text());
         }
-    }
-
-    private int getRightAnswerNumber(List<Answer> answers) {
-        for (int i = 0; i < answers.size(); i++) {
-            if (answers.get(i).isCorrect()) {
-                return i + 1;
-            }
-        }
-        return -1;
     }
 
     private int getStudentAnswerNumber(int answerCount) {
