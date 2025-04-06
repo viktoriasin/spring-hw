@@ -11,3 +11,7 @@ test:
   fileNameByLocaleTag:
     ru-RU: questions_ru.csv
     en-US: questions.csv
+io:
+  streams:
+    printStream: "#{T(System).out}"
+    scanner: "#{T(System).in}"
