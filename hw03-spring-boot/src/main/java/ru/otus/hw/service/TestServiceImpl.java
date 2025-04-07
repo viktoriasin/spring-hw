@@ -28,6 +28,7 @@ public class TestServiceImpl implements TestService {
 
         int questionCount = 0;
         for (var question: questions) {
+            ioService.printLine(question.text());
             ioService.printFormattedLineLocalized("TestService.question", ++questionCount, question.text());
             List<Answer> answers = question.answers();
             if (answers != null && !answers.isEmpty()) {

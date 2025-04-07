@@ -7,11 +7,11 @@ spring:
     fallbackToSystemLocale: false
 test:
   rightAnswersCountToPass: 3
-  locale: en-US
+  locale: ru-RU
   fileNameByLocaleTag:
     ru-RU: questions_ru.csv
     en-US: questions.csv
 io:
   streams:
-    printStream: "#{T(System).out}"
-    scanner: "#{T(System).in}"
+    printStream: \#{T(System).out}
+    scanner: \#{T(System).in}
