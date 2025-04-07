@@ -40,9 +40,9 @@ class TestServiceImplTest {
 
     @Test
     void testCorrectStudentAnswer() {
-        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(),  ArgumentMatchers.anyString(),
+        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
             ArgumentMatchers.anyString()))
-                .thenReturn(1);
+            .thenReturn(1);
 
         TestServiceImpl testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(student);
@@ -52,9 +52,9 @@ class TestServiceImplTest {
 
     @Test
     void testIncorrectStudentAnswer() {
-        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(),  ArgumentMatchers.anyString(),
+        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
             ArgumentMatchers.anyString()))
-                .thenReturn(3);
+            .thenReturn(3);
 
         TestServiceImpl testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(student);

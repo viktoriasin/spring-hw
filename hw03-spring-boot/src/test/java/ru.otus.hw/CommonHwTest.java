@@ -8,7 +8,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import ru.otus.hw.Application;
 import ru.otus.hw.config.AppProperties;
 
 import java.util.Arrays;
@@ -24,17 +23,17 @@ class CommonHwTest {
     @Test
     void shouldNotContainConfigurationAnnotationAboveItSelf() {
         assertThat(AppProperties.class.isAnnotationPresent(Configuration.class))
-                .withFailMessage("Класс свойств не является конфигурацией т.к. " +
-                        "конфигурация для создания бинов, а тут просто компонент группирующий свойства приложения")
-                .isFalse();
+            .withFailMessage("Класс свойств не является конфигурацией т.к. " +
+                "конфигурация для создания бинов, а тут просто компонент группирующий свойства приложения")
+            .isFalse();
     }
 
     @Test
     void shouldNotContainPropertySourceAnnotationAboveItSelf() {
         assertThat(AppProperties.class.isAnnotationPresent(PropertySource.class))
-                .withFailMessage("Аннотацию @PropertySource лучше вешать над конфигурацией, " +
-                        "а класс свойств ей не является")
-                .isFalse();
+            .withFailMessage("Аннотацию @PropertySource лучше вешать над конфигурацией, " +
+                "а класс свойств ей не является")
+            .isFalse();
     }
 
     @Test
@@ -48,19 +47,19 @@ class CommonHwTest {
             var isConfiguration = annotationMetaData.hasAnnotation(CONFIGURATION_ANNOTATION_NAME);
             var clazz = getBeanClassByName(metaData.getClassName());
             var classContainsFieldInjectedDependenciesOrProperties = Arrays.stream(clazz.getDeclaredFields())
-                    .anyMatch(f -> f.isAnnotationPresent(Autowired.class) || f.isAnnotationPresent(Value.class));
+                .anyMatch(f -> f.isAnnotationPresent(Autowired.class) || f.isAnnotationPresent(Value.class));
             return !isTest && !isInterface && !isConfiguration && classContainsFieldInjectedDependenciesOrProperties;
         });
 
         var classesContainsFieldInjectedDependenciesOrProperties =
-                provider.findCandidateComponents(Application.class.getPackageName());
+            provider.findCandidateComponents(Application.class.getPackageName());
 
         var classesNames = classesContainsFieldInjectedDependenciesOrProperties.stream()
-                .map(BeanDefinition::getBeanClassName).collect(Collectors.joining("%n"));
+            .map(BeanDefinition::getBeanClassName).collect(Collectors.joining("%n"));
         assertThat(classesContainsFieldInjectedDependenciesOrProperties)
-                .withFailMessage("На курсе все внедрение рекомендовано осуществлять через конструктор (" +
-                        "в т.ч. @Value). Следующие классы нарушают это правило: %n%s".formatted(classesNames))
-                .isEmpty();
+            .withFailMessage("На курсе все внедрение рекомендовано осуществлять через конструктор (" +
+                "в т.ч. @Value). Следующие классы нарушают это правило: %n%s".formatted(classesNames))
+            .isEmpty();
     }
 
     private Class<?> getBeanClassByName(String beanClassName) {

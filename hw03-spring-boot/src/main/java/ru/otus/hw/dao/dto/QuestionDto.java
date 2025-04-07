@@ -16,7 +16,7 @@ public class QuestionDto {
     private String text;
 
     @CsvBindAndSplitByPosition(position = 1, collectionType = ArrayList.class, elementType = Answer.class,
-            converter = AnswerCsvConverter.class, splitOn = "\\|")
+        converter = AnswerCsvConverter.class, splitOn = "\\|")
     private List<Answer> answers;
 
     public Question toDomainObject() {
