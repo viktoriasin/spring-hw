@@ -1,8 +1,6 @@
-package hw.domain;
+package ru.otus.hw.domain;
 
 import lombok.Data;
-import ru.otus.hw.domain.Question;
-import ru.otus.hw.domain.Student;
 
 import java.util.ArrayList;
 import java.util.List;
