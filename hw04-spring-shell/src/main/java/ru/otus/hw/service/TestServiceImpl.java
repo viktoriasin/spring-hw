@@ -13,14 +13,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-    private final LocalizedIOService ioService;
+    private final StreamsIOService ioService;
 
     private final QuestionDao questionDao;
 
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.printLineLocalized("TestService.answer.the.questions");
+        ioService.pr("TestService.answer.the.questions");
         ioService.printLine("");
 
         var questions = questionDao.findAll();
