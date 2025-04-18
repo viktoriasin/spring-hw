@@ -2,7 +2,6 @@ package ru.otus.hw.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.service.IOService;
 
 import java.io.InputStream;
 import java.io.PrintStream;
