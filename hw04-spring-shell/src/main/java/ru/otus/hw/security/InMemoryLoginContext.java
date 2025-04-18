@@ -1,6 +1,5 @@
 package ru.otus.hw.security;
 
-import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.domain.Student;
 
