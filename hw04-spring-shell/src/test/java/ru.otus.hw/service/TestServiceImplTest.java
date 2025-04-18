@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -17,13 +20,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = TestServiceImpl.class)
 class TestServiceImplTest {
 
-    @Mock
-    private LocalizedIOService ioService;
-    @Mock
+    @MockitoBean
+    private IOService ioService;
+
+    @MockitoBean
     private QuestionDao questionDao;
+
+    @Autowired
+    private TestService testService;
 
     private Student student;
 
@@ -40,11 +47,10 @@ class TestServiceImplTest {
 
     @Test
     void testCorrectStudentAnswer() {
-        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
+        when(ioService.readIntForRangeWithPrompt(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
             ArgumentMatchers.anyString()))
             .thenReturn(1);
 
-        TestServiceImpl testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(student);
         assertEquals(testResult.getRightAnswersCount(), 1);
         assertEquals(testResult.getAnsweredQuestions().size(), 1);
@@ -52,11 +58,10 @@ class TestServiceImplTest {
 
     @Test
     void testIncorrectStudentAnswer() {
-        when(ioService.readIntForRangeWithPromptLocalized(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
+        when(ioService.readIntForRangeWithPrompt(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyString(),
             ArgumentMatchers.anyString()))
             .thenReturn(3);
 
-        TestServiceImpl testService = new TestServiceImpl(ioService, questionDao);
         TestResult testResult = testService.executeTestFor(student);
         assertEquals(testResult.getRightAnswersCount(), 0);
         assertEquals(testResult.getAnsweredQuestions().size(), 1);
