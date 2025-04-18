@@ -6,4 +6,6 @@ public interface LoginContext {
     void login(Student student);
 
     boolean isStudentLoggedIn();
+
+    Student getCurrentLoggedInStudent();
 }

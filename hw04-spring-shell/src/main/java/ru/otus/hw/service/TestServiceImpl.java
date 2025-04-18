@@ -13,23 +13,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-    private final StreamsIOService ioService;
+    private final IOService ioService;
 
     private final QuestionDao questionDao;
 
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.pr("TestService.answer.the.questions");
-        ioService.printLine("");
-
+        ioService.printFormattedLine("Please answer the questions below%n");
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
 
         int questionCount = 0;
         for (var question : questions) {
-            ioService.printLine(question.text());
-            ioService.printFormattedLineLocalized("TestService.question", ++questionCount, question.text());
+            ioService.printFormattedLine("Question №%d: %s", ++questionCount, question.text());
             List<Answer> answers = question.answers();
             if (answers != null && !answers.isEmpty()) {
                 printAnswers(answers);
@@ -42,16 +39,16 @@ public class TestServiceImpl implements TestService {
     }
 
     private void printAnswers(List<Answer> answers) {
-        ioService.printLineLocalized("TestService.possible.answers");
+        ioService.printFormattedLine("Possible answers:");
         int answerCount = 0;
         for (Answer answer : answers) {
-            ioService.printFormattedLineLocalized("TestService.possible.answers.text", ++answerCount, answer.text());
+            ioService.printFormattedLine("%d) %s", ++answerCount, answer.text());
         }
     }
 
     private int getStudentAnswerNumber(int answerCount) {
-        return ioService.readIntForRangeWithPromptLocalized(1, answerCount,
-            "TestService.possible.answers.enter", "TestService.possible.error.message");
+        String errorMessage = "You must enter the number of one of the answer options";
+        return ioService.readIntForRangeWithPrompt(1, answerCount, "Enter your answer: ", errorMessage);
     }
 
 }

@@ -1,9 +1,13 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 import ru.otus.hw.shell.ShellInputReader;
 import ru.otus.hw.shell.ShellOutputWriter;
 
+@Primary
+@Service
 @RequiredArgsConstructor
 public class ConsoleIOService implements IOService {
     private static final int MAX_ATTEMPTS = 10;
