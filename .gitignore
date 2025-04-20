@@ -29,3 +29,6 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+### Spring ###
+spring-shell.log
