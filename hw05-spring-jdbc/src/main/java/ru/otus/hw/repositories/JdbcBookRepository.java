@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
@@ -20,6 +22,8 @@ import java.util.Optional;
 public class JdbcBookRepository implements BookRepository {
 
     private final GenreRepository genreRepository;
+
+    private final NamedParameterJdbcOperations jdbc;
 
     @Override
     public Optional<Book> findById(long id) {
@@ -49,16 +53,29 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
-        return new ArrayList<>();
+        return jdbc.query("select books.id as book_id, title, authors.id as author_id, full_name " +
+            " from books join authors on books.author_id = authors.id",
+            new JdbcBookRepository.BookRowMapper());
     }
 
     private List<BookGenreRelation> getAllGenreRelations() {
-        return new ArrayList<>();
+        return jdbc.query("select book_id, genre_id from books_genres",
+            new JdbcBookRepository.BookGenreRelationMapper());
     }
+
 
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
                                 List<BookGenreRelation> relations) {
-        // Добавить книгам (booksWithoutGenres) жанры (genres) в соответствии со связями (relations)
+        for (Book book : booksWithoutGenres) {
+            List<Long> filteredGenreIds = relations.stream()
+                .filter(relation -> relation.bookId == book.getId())
+                .map(relation -> relation.genreId)
+                .toList();
+            List<Genre> genreList = genres.stream()
+                .filter(genre -> filteredGenreIds.contains(genre.getId()))
+                .toList();
+            book.setGenres(genreList);
+        }
     }
 
     private Book insert(Book book) {
@@ -94,7 +111,22 @@ public class JdbcBookRepository implements BookRepository {
 
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return null;
+            long bookId = rs.getLong("book_id");
+            String title = rs.getString("title");
+            long authorId = rs.getLong("author_id");
+            String fullName = rs.getString("full_name");
+
+            return new Book(bookId, title, new Author(authorId, fullName), null);
+        }
+    }
+
+    private static class BookGenreRelationMapper implements RowMapper<BookGenreRelation> {
+
+        @Override
+        public BookGenreRelation mapRow(ResultSet rs, int rowNum) throws SQLException {
+            long bookId = rs.getLong("book_id");
+            long genreId = rs.getLong("genre_id");
+            return new BookGenreRelation(bookId, genreId);
         }
     }
 
@@ -104,7 +136,7 @@ public class JdbcBookRepository implements BookRepository {
     private static class BookResultSetExtractor implements ResultSetExtractor<Book> {
 
         @Override
-        public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
+        public Book extractData(ResultSet rs) throws DataAccessException {
             return null;
         }
     }
