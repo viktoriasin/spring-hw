@@ -28,7 +28,7 @@ public class JdbcAuthorRepository implements AuthorRepository {
 
     @Override
     public Optional<Author> findById(long id) {
-        Map<String, Object> params = new HashMap<>(1);
+        Map<String, Long> params = new HashMap<>(1);
         params.put("id", id);
         return Optional.ofNullable(
             jdbc.queryForObject(

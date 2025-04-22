@@ -13,9 +13,7 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,8 +25,23 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        return Optional.empty();
+        Map<String, Long> params = new HashMap<>(1);
+        params.put("id", id);
+        return Optional.ofNullable(jdbc.query("""
+            select books.id as book_id
+            , title
+            , authors.id as author_id
+            , full_name
+            , genres.id as genre_id
+            , name
+            from books
+            join authors on books.author_id = authors.id
+            join books_genres on books_genres.book_id = books.id
+            join genres on genres.id = books_genres.genre_id
+            where books.id = :id
+            """, params, new JdbcBookRepository.BookResultSetExtractor()));
     }
+
 
     @Override
     public List<Book> findAll() {
@@ -53,8 +66,8 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
-        return jdbc.query("select books.id as book_id, title, authors.id as author_id, full_name " +
-            " from books join authors on books.author_id = authors.id",
+        return jdbc.query("select books.id as book_id, title, authors.id as author_id, full_name "
+                + " from books join authors on books.author_id = authors.id",
             new JdbcBookRepository.BookRowMapper());
     }
 
@@ -64,16 +77,13 @@ public class JdbcBookRepository implements BookRepository {
     }
 
 
-    private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
-                                List<BookGenreRelation> relations) {
+    private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres, List<BookGenreRelation> relations) {
         for (Book book : booksWithoutGenres) {
             List<Long> filteredGenreIds = relations.stream()
                 .filter(relation -> relation.bookId == book.getId())
-                .map(relation -> relation.genreId)
-                .toList();
+                .map(relation -> relation.genreId).toList();
             List<Genre> genreList = genres.stream()
-                .filter(genre -> filteredGenreIds.contains(genre.getId()))
-                .toList();
+                .filter(genre -> filteredGenreIds.contains(genre.getId())).toList();
             book.setGenres(genreList);
         }
     }
@@ -136,8 +146,19 @@ public class JdbcBookRepository implements BookRepository {
     private static class BookResultSetExtractor implements ResultSetExtractor<Book> {
 
         @Override
-        public Book extractData(ResultSet rs) throws DataAccessException {
-            return null;
+        public Book extractData(ResultSet rs) throws DataAccessException, SQLException {
+            List<Genre> genresList = new ArrayList<>();
+            Book book = new Book();
+            while (rs.next()) {
+                if (book.getTitle() == null) {
+                    book.setId(rs.getLong("book_id"));
+                    book.setTitle(rs.getString("title"));
+                    book.setAuthor(new Author(rs.getLong("author_id"), rs.getString("full_name")));
+                }
+                genresList.add(new Genre(rs.getLong("genre_id"), rs.getString("name")));
+            }
+            book.setGenres(genresList);
+            return book;
         }
     }
 

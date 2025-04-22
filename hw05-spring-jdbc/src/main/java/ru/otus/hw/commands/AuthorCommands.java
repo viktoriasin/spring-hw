@@ -6,6 +6,9 @@ import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.services.AuthorService;
 
+import org.h2.tools.Console;
+
+import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -21,5 +24,10 @@ public class AuthorCommands {
         return authorService.findAll().stream()
                 .map(authorConverter::authorToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
+    }
+
+    @ShellMethod(value = "Find all authors", key = "c")
+    public void console() throws SQLException {
+         Console.main();
     }
 }
