@@ -39,14 +39,13 @@ class JdbcBookRepositoryTest {
     }
 
     @DisplayName("должен загружать книгу по id")
-        @Test
-//    @ParameterizedTest
-//    @MethodSource("getDbBooks")
-    void shouldReturnCorrectBookById() {
-        var actualBook = repositoryJdbc.findById(3L);
-//        assertThat(actualBook).isPresent()
-//                .get()
-//                .isEqualTo(expectedBook);
+    @ParameterizedTest
+    @MethodSource("getDbBooks")
+    void shouldReturnCorrectBookById(Book expectedBook) {
+        var actualBook = repositoryJdbc.findById(expectedBook.getId());
+        assertThat(actualBook).isPresent()
+                .get()
+                .isEqualTo(expectedBook);
     }
 
     @DisplayName("должен загружать список всех книг")
@@ -100,8 +99,11 @@ class JdbcBookRepositoryTest {
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
+        System.out.println(repositoryJdbc.findById(4L));
+        repositoryJdbc.findAll().forEach(System.out::println);
         assertThat(repositoryJdbc.findById(1L)).isPresent();
         repositoryJdbc.deleteById(1L);
+        repositoryJdbc.findAll().forEach(System.out::println);
         assertThat(repositoryJdbc.findById(1L)).isEmpty();
     }
 
