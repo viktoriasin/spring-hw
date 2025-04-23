@@ -40,10 +40,9 @@ public class JdbcBookRepository implements BookRepository {
             , genres.id as genre_id
             , name
             from books
-            join authors on books.author_id = authors.id
+            join authors on books.author_id = authors.id and books.id = :id
             join books_genres on books_genres.book_id = books.id
             join genres on genres.id = books_genres.genre_id
-            where books.id = :id
             """, Map.of("id", id), new JdbcBookRepository.BookResultSetExtractor()));
     }
 
