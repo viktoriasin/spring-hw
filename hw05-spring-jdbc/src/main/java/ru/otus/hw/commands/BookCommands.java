@@ -21,15 +21,15 @@ public class BookCommands {
     @ShellMethod(value = "Find all books", key = "ab")
     public String findAllBooks() {
         return bookService.findAll().stream()
-                .map(bookConverter::bookToString)
-                .collect(Collectors.joining("," + System.lineSeparator()));
+            .map(bookConverter::bookToString)
+            .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
     @ShellMethod(value = "Find book by id", key = "bbid")
     public String findBookById(long id) {
         return bookService.findById(id)
-                .map(bookConverter::bookToString)
-                .orElse("Book with id %d not found".formatted(id));
+            .map(bookConverter::bookToString)
+            .orElse("Book with id %d not found".formatted(id));
     }
 
     // bins newBook 1 1,6

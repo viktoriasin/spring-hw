@@ -17,7 +17,10 @@ import ru.otus.hw.models.Genre;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,8 +32,6 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        Map<String, Long> params = new HashMap<>(1);
-        params.put("id", id);
         return Optional.ofNullable(jdbc.query("""
             select books.id as book_id
             , title
@@ -43,7 +44,7 @@ public class JdbcBookRepository implements BookRepository {
             join books_genres on books_genres.book_id = books.id
             join genres on genres.id = books_genres.genre_id
             where books.id = :id
-            """, params, new JdbcBookRepository.BookResultSetExtractor()));
+            """, Map.of("id", id), new JdbcBookRepository.BookResultSetExtractor()));
     }
 
 
@@ -95,7 +96,6 @@ public class JdbcBookRepository implements BookRepository {
     private Book insert(Book book) {
         var keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource paramsBook = new MapSqlParameterSource();
-        paramsBook.addValue("id", book.getId());
         paramsBook.addValue("title", book.getTitle());
         paramsBook.addValue("author_id", book.getAuthor().getId());
 
@@ -144,7 +144,6 @@ public class JdbcBookRepository implements BookRepository {
 
     private void removeGenresRelationsFor(Book book) {
         long bookId = book.getId();
-        List<Genre> genreList = book.getGenres();
         jdbc.update("delete from books_genres where book_id = :book_id", Map.of("book_id", bookId));
     }
 
