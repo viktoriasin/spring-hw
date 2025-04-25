@@ -14,4 +14,4 @@ values (1, 1),   (1, 2),
        (3, 5),   (3, 6);
 
 insert into comments(text, book_id)
-values ("Very good book", 1), ("Very bad book", 1), ("Wonderful book!", 3)
+values ('Very good book', 1), ('Very bad book', 1), ('Wonderful book!', 3);
