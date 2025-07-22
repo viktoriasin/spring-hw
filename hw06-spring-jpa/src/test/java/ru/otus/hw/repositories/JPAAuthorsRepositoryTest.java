@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(JPAAuthorRepository.class)
 class JPAAuthorsRepositoryTest {
 
-    private static final long FIRST_STUDENT_ID = 1L;
     private static final int EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
@@ -40,9 +39,6 @@ class JPAAuthorsRepositoryTest {
     void shouldReturnCorrectAuthorsList() {
         var actualAuthors = repositoryJPA.findAll();
         assertThat(actualAuthors).isNotNull().hasSize(EXPECTED_NUMBER_OF_AUTHORS)
-            .allMatch(s -> !s.getFullName().equals(""));
-
-//        assertThat(actualAuthors).containsExactlyElementsOf(expectedAuthors); // TODO:
-        actualAuthors.forEach(System.out::println);
+            .allMatch(s -> !s.getFullName().isEmpty());
     }
 }
