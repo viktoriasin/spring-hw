@@ -3,31 +3,15 @@ package ru.otus.hw.repositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class JPABookRepository implements BookRepository {
-
-    private final GenreRepository genreRepository;
 
     @PersistenceContext
     private final EntityManager em;
@@ -39,7 +23,6 @@ public class JPABookRepository implements BookRepository {
             .getSingleResult());
 
     }
-
 
     @Override
     public List<Book> findAll() {

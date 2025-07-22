@@ -8,6 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -43,20 +44,17 @@ public class Book {
 
     @Override
     public final boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (!(object instanceof Book book)) {
-            return false;
-        }
+        if (this == object) return true;
+        if (!(object instanceof Book book)) return false;
 
-        return id == book.id && title.equals(book.title);
+        return id == book.id && Objects.equals(title, book.title) && Objects.equals(author, book.author);
     }
 
     @Override
     public int hashCode() {
         int result = Long.hashCode(id);
-        result = 31 * result + title.hashCode();
+        result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(author);
         return result;
     }
 }
