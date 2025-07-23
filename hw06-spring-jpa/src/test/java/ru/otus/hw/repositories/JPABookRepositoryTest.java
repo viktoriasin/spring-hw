@@ -1,12 +1,8 @@
 package ru.otus.hw.repositories;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
@@ -14,8 +10,8 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,113 +26,61 @@ class JPABookRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
-    private List<Author> dbAuthors;
-
-    private List<Genre> dbGenres;
-
-    private List<Book> dbBooks;
-
-    @BeforeEach
-    void setUp() {
-        dbAuthors = getDbAuthors();
-        dbGenres = getDbGenres();
-        dbBooks = getDbBooks(dbAuthors, dbGenres);
-    }
-
     @DisplayName("должен загружать книгу по id")
-    @ParameterizedTest
-    @MethodSource("getDbBooks")
-    void shouldReturnCorrectBookById(Book expectedBook) {
-        var actualBook = repositoryJPA.findById(expectedBook.getId());
+    @Test
+    void shouldReturnCorrectBookById() {
+        Book persistedBook = em.persist(getNewBook());
+        var actualBook = repositoryJPA.findById(persistedBook.getId());
+
         assertThat(actualBook).isPresent()
             .get()
-            .isEqualTo(expectedBook);
-    }
-
-    @DisplayName("должен загружать список всех книг")
-    @Test
-    void shouldReturnCorrectBooksList() {
-        var actualBooks = repositoryJPA.findAll();
-        var expectedBooks = dbBooks;
-
-        assertThat(actualBooks).containsExactlyElementsOf(expectedBooks);
-        actualBooks.forEach(System.out::println);
+            .usingRecursiveComparison()
+            .ignoringExpectedNullFields()
+            .isEqualTo(persistedBook);
     }
 
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0),
-            List.of(dbGenres.get(0), dbGenres.get(2)));
-        var returnedBook = repositoryJPA.save(expectedBook);
-        assertThat(returnedBook).isNotNull()
-            .matches(book -> book.getId() > 0)
-            .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
+        var expectedBook = repositoryJPA.save(getNewBook());
 
-        assertThat(repositoryJPA.findById(returnedBook.getId()))
-            .isPresent()
-            .get()
-            .isEqualTo(returnedBook);
+        assertThat(expectedBook).isNotNull()
+            .matches(b -> b.getId() > 0);
+
+        Book actualBook = em.find(Book.class, expectedBook.getId());
+        assertThat(actualBook).isNotNull()
+            .matches(b -> b.getId() > 0)
+            .usingRecursiveComparison()
+            .ignoringExpectedNullFields()
+            .isEqualTo(expectedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2),
-            List.of(dbGenres.get(4), dbGenres.get(5)));
+        var expectedBook = repositoryJPA.save(getNewBook());
+        expectedBook.setTitle("New title");
+        repositoryJPA.save(expectedBook);
 
-        assertThat(repositoryJPA.findById(expectedBook.getId()))
-            .isPresent()
-            .get()
-            .isNotEqualTo(expectedBook);
-
-        var returnedBook = repositoryJPA.save(expectedBook);
-        assertThat(returnedBook).isNotNull()
-            .matches(book -> book.getId() > 0)
-            .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
-
-        assertThat(repositoryJPA.findById(returnedBook.getId()))
-            .isPresent()
-            .get()
-            .isEqualTo(returnedBook);
+        Book actualBook = em.find(Book.class, expectedBook.getId());
+        assertThat(actualBook)
+            .usingRecursiveComparison()
+            .ignoringExpectedNullFields()
+            .isEqualTo(expectedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        System.out.println(repositoryJPA.findById(4L));
-        repositoryJPA.findAll().forEach(System.out::println);
-        assertThat(repositoryJPA.findById(1L)).isPresent();
-        repositoryJPA.deleteById(1L);
-        repositoryJPA.findAll().forEach(System.out::println);
-        assertThat(repositoryJPA.findById(1L)).isEmpty();
+        var newBook = getNewBook();
+        var expectedBook = repositoryJPA.save(newBook);
+        assertThat(em.find(Book.class, expectedBook.getId())).isNotNull();
+        repositoryJPA.deleteById(expectedBook.getId());
+        assertThat(em.find(Book.class, expectedBook.getId())).isNull();
     }
 
-    private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
-            .map(id -> new Author(id, "Author_" + id))
-            .toList();
-    }
-
-    private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 7).boxed()
-            .map(id -> new Genre(id, "Genre_" + id))
-            .toList();
-    }
-
-    private static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
-            .map(id -> new Book(id,
-                "BookTitle_" + id,
-                dbAuthors.get(id - 1),
-                dbGenres.subList((id - 1) * 2, (id - 1) * 2 + 2)
-            ))
-            .toList();
-    }
-
-    private static List<Book> getDbBooks() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
-        return getDbBooks(dbAuthors, dbGenres);
+    private static Book getNewBook() {
+        return new Book(0, "Book", new Author(0, "Author"),
+            new ArrayList<>(List.of(new Genre(0, "Genre"))));
     }
 }

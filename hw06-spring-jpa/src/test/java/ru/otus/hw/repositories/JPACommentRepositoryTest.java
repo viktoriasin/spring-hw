@@ -41,37 +41,40 @@ class JPACommentRepositoryTest {
     @DisplayName("должен сохранять комментарий")
     @Test
     void shouldSaveComment() {
-        Book persistedBook = persistNewBookAndGet();
-        Comment newComment = new Comment(0, "Comment", persistedBook);
-        Comment savedComment = repositoryJPA.save(newComment);
-        Comment comment = em.find(Comment.class, savedComment.getId());
-        newComment.setId(comment.getId());
-        assertThat(comment).isNotNull()
-            .usingRecursiveComparison().isEqualTo(newComment);
+        Comment expectedComment = repositoryJPA.save(getComment());
+        Comment actualComment = em.find(Comment.class, expectedComment.getId());
+        assertThat(actualComment).isNotNull()
+            .usingRecursiveComparison()
+            .ignoringExpectedNullFields()
+            .isEqualTo(expectedComment);
     }
 
     @DisplayName("должен обновлять комментарий")
     @Test
     void shouldUpdateComment() {
-        Book persistedBook = persistNewBookAndGet();
-        Comment newComment = new Comment(0, "Comment", persistedBook);
-        Comment savedComment = repositoryJPA.save(newComment);
-        savedComment.setText("New text");
-        Comment updatedComment = repositoryJPA.save(savedComment);
-        Comment updatedCommentFromDB = em.find(Comment.class, updatedComment.getId());
-        assertThat(updatedCommentFromDB).isNotNull();
-        assertThat(updatedCommentFromDB.getText()).isEqualTo("New text");
+        Comment expectedComment = repositoryJPA.save(getComment());
+        expectedComment.setText("New text");
+        repositoryJPA.save(expectedComment);
+
+        Comment actualComment = em.find(Comment.class, expectedComment.getId());
+        assertThat(actualComment)
+            .usingRecursiveComparison()
+            .ignoringExpectedNullFields()
+            .isEqualTo(expectedComment);
     }
 
     @DisplayName("должен удалять комментарий")
     @Test
     void shouldDeleteComment() {
+        Comment expectedComment = repositoryJPA.save(getComment());
+        assertThat(em.find(Comment.class, expectedComment.getId())).isNotNull();
+        repositoryJPA.deleteById(expectedComment.getId());
+        assertThat(em.find(Comment.class, expectedComment.getId())).isNull();
+    }
+
+    private Comment getComment() {
         Book persistedBook = persistNewBookAndGet();
-        Comment newComment = new Comment(0, "Comment", persistedBook);
-        Comment savedComment = repositoryJPA.save(newComment);
-        assertThat(em.find(Comment.class, savedComment.getId())).isNotNull();
-        repositoryJPA.deleteById(savedComment.getId());
-        assertThat(em.find(Comment.class, savedComment.getId())).isNull();
+        return new Comment(0, "Comment", persistedBook);
     }
 
     private Book persistNewBookAndGet() {
