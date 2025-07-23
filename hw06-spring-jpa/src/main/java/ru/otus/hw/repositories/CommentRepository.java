@@ -12,7 +12,7 @@ public interface CommentRepository {
 
     Optional<Comment> findById(long id);
 
-    Optional<Comment> findByBookId(long id);
+    List<Comment> findByBookId(long id);
 
     Comment save(Comment Comment);
 

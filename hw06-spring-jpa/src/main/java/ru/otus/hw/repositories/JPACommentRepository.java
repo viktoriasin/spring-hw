@@ -4,8 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,10 +23,10 @@ public class JPACommentRepository implements CommentRepository {
     }
 
     @Override
-    public Optional<Comment> findByBookId(long id) {
-        return Optional.ofNullable(em.createQuery("select c from Comment c where c.book_id = :id", Comment.class)
+    public List<Comment> findByBookId(long id) {
+        return em.createQuery("select c from Comment c where c.book_id = :id", Comment.class)
             .setParameter("id", id)
-            .getSingleResult());
+            .getResultList();
     }
 
     @Override
