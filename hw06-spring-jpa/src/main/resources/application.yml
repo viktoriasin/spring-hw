@@ -27,6 +27,6 @@ spring:
 
 logging:
   level:
-#    ROOT: ERROR
+    #    ROOT: ERROR
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -26,6 +26,11 @@ class JPABookRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
+    private static Book getNewBook() {
+        return new Book(0, "Book", new Author(0, "Author"),
+            new ArrayList<>(List.of(new Genre(0, "Genre"))));
+    }
+
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
@@ -77,10 +82,5 @@ class JPABookRepositoryTest {
         assertThat(em.find(Book.class, expectedBook.getId())).isNotNull();
         repositoryJPA.deleteById(expectedBook.getId());
         assertThat(em.find(Book.class, expectedBook.getId())).isNull();
-    }
-
-    private static Book getNewBook() {
-        return new Book(0, "Book", new Author(0, "Author"),
-            new ArrayList<>(List.of(new Genre(0, "Genre"))));
     }
 }

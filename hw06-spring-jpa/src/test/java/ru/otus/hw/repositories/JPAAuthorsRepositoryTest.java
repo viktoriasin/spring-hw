@@ -28,7 +28,7 @@ class JPAAuthorsRepositoryTest {
     @Test
     void shouldReturnCorrectAuthorsListById() {
         val optionalActualAuthor = repositoryJPA.findById(1L);
-        val expectedAuthor= em.find(Author.class, 1L);
+        val expectedAuthor = em.find(Author.class, 1L);
 
         assertThat(optionalActualAuthor).isPresent().get()
             .usingRecursiveComparison().isEqualTo(expectedAuthor);

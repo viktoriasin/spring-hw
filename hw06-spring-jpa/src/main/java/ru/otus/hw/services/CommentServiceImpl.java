@@ -37,7 +37,8 @@ public class CommentServiceImpl implements CommentService {
     public Comment insert(String text, Book book) {
         if (bookRepository.findById(book.getId()).isEmpty()) {
             throw new EntityNotFoundException("Book with id %d for saving comment is not found!".formatted(book.getId()));
-        };
+        }
+        ;
         return commentRepository.save(new Comment(0, text, book));
     }
 
