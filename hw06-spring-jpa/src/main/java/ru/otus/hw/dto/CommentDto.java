@@ -1,10 +1,8 @@
 package ru.otus.hw.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.otus.hw.models.Book;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +12,5 @@ public class CommentDto {
 
     private String text;
 
-    private Book book;
+    private BookDto book;
 }
