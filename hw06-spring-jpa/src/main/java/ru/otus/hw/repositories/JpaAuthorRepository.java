@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JPAAuthorRepository implements AuthorRepository {
+public class JpaAuthorRepository implements AuthorRepository {
 
     @PersistenceContext
     private final EntityManager em;
 
-    public JPAAuthorRepository(EntityManager em) {
+    public JpaAuthorRepository(EntityManager em) {
         this.em = em;
     }
 

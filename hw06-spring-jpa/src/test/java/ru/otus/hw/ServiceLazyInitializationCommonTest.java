@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SpringBootTest
-public class ServiceCommonTest {
+public class ServiceLazyInitializationCommonTest {
 
     @Autowired
     CommentService commentService;

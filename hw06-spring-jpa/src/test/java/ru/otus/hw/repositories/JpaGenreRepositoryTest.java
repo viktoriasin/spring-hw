@@ -15,11 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с жанрами ")
 @DataJpaTest
-@Import(JPAGenreRepository.class)
-class JPAGenreRepositoryTest {
+@Import(JpaGenreRepository.class)
+class JpaGenreRepositoryTest {
 
     @Autowired
-    private JPAGenreRepository repositoryJPA;
+    private JpaGenreRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;
@@ -28,7 +28,7 @@ class JPAGenreRepositoryTest {
     @Test
     void shouldReturnCorrectGenresListByIds() {
         Set<Long> ids = LongStream.range(3L, 5L).boxed().collect(Collectors.toSet());
-        var actualGenres = repositoryJPA.findAllByIds(ids);
+        var actualGenres = repositoryJpa.findAllByIds(ids);
         assertThat(actualGenres).isNotNull().hasSize(2)
             .allMatch(s -> !s.getName().isEmpty());
         actualGenres.forEach(System.out::println);
@@ -37,7 +37,7 @@ class JPAGenreRepositoryTest {
     @DisplayName("должен загружать список всех жанров")
     @Test
     void shouldReturnCorrectGenresList() {
-        var actualGenres = repositoryJPA.findAll();
+        var actualGenres = repositoryJpa.findAll();
         assertThat(actualGenres).isNotNull().hasSize(6)
             .allMatch(s -> !s.getName().isEmpty());
     }

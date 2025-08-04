@@ -17,11 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с книгами ")
 @DataJpaTest
-@Import({JPABookRepository.class, JPAGenreRepository.class})
-class JPABookRepositoryTest {
+@Import({JpaBookRepository.class, JpaGenreRepository.class})
+class JpaBookRepositoryTest {
 
     @Autowired
-    private JPABookRepository repositoryJPA;
+    private JpaBookRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;
@@ -35,7 +35,7 @@ class JPABookRepositoryTest {
     @Test
     void shouldReturnCorrectBookById() {
         Book persistedBook = em.persist(getNewBook());
-        var actualBook = repositoryJPA.findById(persistedBook.getId());
+        var actualBook = repositoryJpa.findById(persistedBook.getId());
 
         assertThat(actualBook).isPresent()
             .get()
@@ -47,7 +47,7 @@ class JPABookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var expectedBook = repositoryJPA.save(getNewBook());
+        var expectedBook = repositoryJpa.save(getNewBook());
 
         assertThat(expectedBook).isNotNull()
             .matches(b -> b.getId() > 0);
@@ -63,9 +63,9 @@ class JPABookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var expectedBook = repositoryJPA.save(getNewBook());
+        var expectedBook = repositoryJpa.save(getNewBook());
         expectedBook.setTitle("New title");
-        repositoryJPA.save(expectedBook);
+        repositoryJpa.save(expectedBook);
 
         Book actualBook = em.find(Book.class, expectedBook.getId());
         assertThat(actualBook)
@@ -78,9 +78,9 @@ class JPABookRepositoryTest {
     @Test
     void shouldDeleteBook() {
         var newBook = getNewBook();
-        var expectedBook = repositoryJPA.save(newBook);
+        var expectedBook = repositoryJpa.save(newBook);
         assertThat(em.find(Book.class, expectedBook.getId())).isNotNull();
-        repositoryJPA.deleteById(expectedBook.getId());
+        repositoryJpa.deleteById(expectedBook.getId());
         assertThat(em.find(Book.class, expectedBook.getId())).isNull();
     }
 }

@@ -44,18 +44,16 @@ public class CommentServiceImpl implements CommentService {
         if (bookRepository.findById(book.getId()).isEmpty()) {
             throw new EntityNotFoundException("Book with id %d for saving comment is not found!".formatted(book.getId()));
         }
-        Comment savedComment = commentRepository.save(new Comment(0, text, book));
-        return commentConverter.commentToDto(savedComment);
+        return commentConverter.commentToDto(commentRepository.save(new Comment(0, text, book)));
     }
 
     @Override
     @Transactional
-    public CommentDto update(long id, String text, Book book) {
-        if (bookRepository.findById(book.getId()).isEmpty()) {
-            throw new EntityNotFoundException("Book with id %d for updating comment is not found!".formatted(book.getId()));
-        }
-        Comment updatedComment = commentRepository.save(new Comment(id, text, book));
-        return commentConverter.commentToDto(updatedComment);
+    public CommentDto update(long id, String text) {
+        Comment datechedComment = commentRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("Comment with id %d is not found!".formatted(id)));
+        datechedComment.setText(text);
+        return commentConverter.commentToDto(commentRepository.save(datechedComment));
     }
 
     @Override

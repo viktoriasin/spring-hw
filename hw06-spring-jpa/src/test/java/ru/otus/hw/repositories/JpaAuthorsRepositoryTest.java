@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с авторами ")
 @DataJpaTest
-@Import(JPAAuthorRepository.class)
-class JPAAuthorsRepositoryTest {
+@Import(JpaAuthorRepository.class)
+class JpaAuthorsRepositoryTest {
 
     private static final int EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
-    private JPAAuthorRepository repositoryJPA;
+    private JpaAuthorRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;
@@ -27,7 +27,7 @@ class JPAAuthorsRepositoryTest {
     @DisplayName("должен загрузить автора по заданному id")
     @Test
     void shouldReturnCorrectAuthorsListById() {
-        val optionalActualAuthor = repositoryJPA.findById(1L);
+        val optionalActualAuthor = repositoryJpa.findById(1L);
         val expectedAuthor = em.find(Author.class, 1L);
 
         assertThat(optionalActualAuthor).isPresent().get()
@@ -37,7 +37,7 @@ class JPAAuthorsRepositoryTest {
     @DisplayName("должен загружать список всех авторов")
     @Test
     void shouldReturnCorrectAuthorsList() {
-        var actualAuthors = repositoryJPA.findAll();
+        var actualAuthors = repositoryJpa.findAll();
         assertThat(actualAuthors).isNotNull().hasSize(EXPECTED_NUMBER_OF_AUTHORS)
             .allMatch(s -> !s.getFullName().isEmpty());
     }

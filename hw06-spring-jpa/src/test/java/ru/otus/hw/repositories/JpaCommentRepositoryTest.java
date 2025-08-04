@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с комментариями ")
 @DataJpaTest
-@Import({JPABookRepository.class, JPACommentRepository.class})
-class JPACommentRepositoryTest {
+@Import({JpaBookRepository.class, JpaCommentRepository.class})
+class JpaCommentRepositoryTest {
     @Autowired
-    private JPACommentRepository repositoryJPA;
+    private JpaCommentRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;
@@ -30,7 +30,7 @@ class JPACommentRepositoryTest {
     @DisplayName("должен загружать комментарий по id")
     @Test
     void shouldReturnCommentById() {
-        val optionalActualComment = repositoryJPA.findById(1L);
+        val optionalActualComment = repositoryJpa.findById(1L);
         val expectedComment = em.find(Comment.class, 1L);
 
         assertThat(optionalActualComment).isPresent().get()
@@ -41,7 +41,7 @@ class JPACommentRepositoryTest {
     @DisplayName("должен сохранять комментарий")
     @Test
     void shouldSaveComment() {
-        Comment expectedComment = repositoryJPA.save(getComment());
+        Comment expectedComment = repositoryJpa.save(getComment());
         Comment actualComment = em.find(Comment.class, expectedComment.getId());
         assertThat(actualComment).isNotNull()
             .usingRecursiveComparison()
@@ -52,9 +52,9 @@ class JPACommentRepositoryTest {
     @DisplayName("должен обновлять комментарий")
     @Test
     void shouldUpdateComment() {
-        Comment expectedComment = repositoryJPA.save(getComment());
+        Comment expectedComment = repositoryJpa.save(getComment());
         expectedComment.setText("New text");
-        repositoryJPA.save(expectedComment);
+        repositoryJpa.save(expectedComment);
 
         Comment actualComment = em.find(Comment.class, expectedComment.getId());
         assertThat(actualComment)
@@ -66,9 +66,9 @@ class JPACommentRepositoryTest {
     @DisplayName("должен удалять комментарий")
     @Test
     void shouldDeleteComment() {
-        Comment expectedComment = repositoryJPA.save(getComment());
+        Comment expectedComment = repositoryJpa.save(getComment());
         assertThat(em.find(Comment.class, expectedComment.getId())).isNotNull();
-        repositoryJPA.deleteById(expectedComment.getId());
+        repositoryJpa.deleteById(expectedComment.getId());
         assertThat(em.find(Comment.class, expectedComment.getId())).isNull();
     }
 
