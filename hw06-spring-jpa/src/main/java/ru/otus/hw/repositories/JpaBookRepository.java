@@ -2,15 +2,18 @@ package ru.otus.hw.repositories;
 
 import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class JpaBookRepository implements BookRepository {
+
 
     @PersistenceContext
     private final EntityManager em;
@@ -44,6 +47,11 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        em.remove(em.getReference(Book.class, id));
+        try {
+            Book reference = em.getReference(Book.class, id);
+            em.remove(reference);
+        } catch (EntityNotFoundException e) {
+            log.info("Can not delete book by id {}. Book does not exist.", id);
+        }
     }
 }

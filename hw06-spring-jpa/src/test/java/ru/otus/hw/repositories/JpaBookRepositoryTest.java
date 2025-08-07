@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @DisplayName("Репозиторий на основе JPA для работы с книгами ")
 @DataJpaTest
@@ -82,5 +83,11 @@ class JpaBookRepositoryTest {
         assertThat(em.find(Book.class, expectedBook.getId())).isNotNull();
         repositoryJpa.deleteById(expectedBook.getId());
         assertThat(em.find(Book.class, expectedBook.getId())).isNull();
+    }
+
+    @DisplayName("должен удалять книгу по id ")
+    @Test
+    void shouldNotDeleteNonExistingBook() {
+        assertThatCode(() -> repositoryJpa.deleteById(111L)).doesNotThrowAnyException();
     }
 }

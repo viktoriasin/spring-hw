@@ -50,10 +50,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto update(long id, String text) {
-        Comment datechedComment = commentRepository.findById(id).orElseThrow(
+        Comment comment = commentRepository.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Comment with id %d is not found!".formatted(id)));
-        datechedComment.setText(text);
-        return commentConverter.commentToDto(commentRepository.save(datechedComment));
+        comment.setText(text);
+        return commentConverter.commentToDto(commentRepository.save(comment));
     }
 
     @Override
