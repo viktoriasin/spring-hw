@@ -47,13 +47,17 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto insert(String title, long authorId, Set<Long> genresIds) {
-        return bookConverter.bookToDto(save(0, title, authorId, genresIds));
+        Book book = new Book(0, null, null, null);
+
+        return bookConverter.bookToDto(save(book, title, authorId, genresIds));
     }
 
     @Override
     @Transactional
     public BookDto update(long id, String title, long authorId, Set<Long> genresIds) {
-        return bookConverter.bookToDto(save(id, title, authorId, genresIds));
+        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no book with id %s to update".formatted(id)));
+
+        return bookConverter.bookToDto(save(book, title, authorId, genresIds));
     }
 
     @Override
@@ -62,29 +66,34 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    private Book save(long id, String title, long authorId, Set<Long> genresIds) {
+    private Book save(Book book, String title, long authorId, Set<Long> genresIds) {
+        Author author = getAuthorById(authorId);
+        List<Genre> genres = getGenresById(genresIds);
+
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setGenres(genres);
+
+        return bookRepository.save(book);
+    }
+
+    private Author getAuthorById(long authorId) {
+        return authorRepository.findById(authorId).orElseThrow(
+            () -> new EntityNotFoundException(
+                "There is no author with id %s".formatted(authorId)));
+    }
+
+    private List<Genre> getGenresById(Set<Long> genresIds) {
         if (isEmpty(genresIds)) {
             throw new IllegalArgumentException("Genres ids must not be null");
         }
 
-        Book book;
-        if (id == 0) {
-            book = new Book(0, null, null, null);
-        } else {
-            book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no book with id %s to update".formatted(id)));
-        }
+        List<Genre> genres = genreRepository.findAllByIds(genresIds);
 
-        Author newAuthor = authorRepository.findById(authorId).orElseThrow(() -> new EntityNotFoundException("There is no author with id %s to update book with id %s".formatted(authorId, id)));
-        List<Genre> newGenres = genreRepository.findAllByIds(genresIds);
-
-        if (isEmpty(newGenres) || genresIds.size() != newGenres.size()) {
+        if (isEmpty(genres) || genresIds.size() != genres.size()) {
             throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
         }
 
-        book.setTitle(title);
-        book.setAuthor(newAuthor);
-        book.setGenres(newGenres);
-
-        return bookRepository.save(book);
+        return genres;
     }
 }
