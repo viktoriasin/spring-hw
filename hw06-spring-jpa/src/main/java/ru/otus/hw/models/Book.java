@@ -1,20 +1,20 @@
 package ru.otus.hw.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "books")
+@NamedEntityGraph(name="book-entity-graph", attributeNodes = {@NamedAttributeNode("author"), @NamedAttributeNode("genres")})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Book {
     @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "AUTHOR_ID_FK"))
     private Author author;
 
-    @Fetch(FetchMode.SUBSELECT)
+//    @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(targetEntity = Genre.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "books_genres", joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id"))
@@ -40,21 +40,5 @@ public class Book {
             "id=" + id +
             ", title='" + title + '\'' +
             '}';
-    }
-
-    @Override
-    public final boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Book book)) return false;
-
-        return id == book.id && Objects.equals(title, book.title) && Objects.equals(author, book.author);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Long.hashCode(id);
-        result = 31 * result + Objects.hashCode(title);
-        result = 31 * result + Objects.hashCode(author);
-        return result;
     }
 }
