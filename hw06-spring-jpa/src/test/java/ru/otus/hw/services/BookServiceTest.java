@@ -54,7 +54,7 @@ class BookServiceTest {
         List<BookDto> allExpectedBook = em.getEntityManager().createQuery("""
             select b
             from Book b
-            fetch left join b.author a
+            left join b.author a
             """, Book.class).getResultList().stream().map(bookConverter::bookToDto).toList();
 
         assertThat(allBooks).containsExactlyInAnyOrderElementsOf(allExpectedBook);
