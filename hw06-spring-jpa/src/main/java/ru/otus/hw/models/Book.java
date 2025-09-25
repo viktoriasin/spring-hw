@@ -1,12 +1,14 @@
 package ru.otus.hw.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -14,7 +16,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "books")
-@NamedEntityGraph(name="book-entity-graph", attributeNodes = {@NamedAttributeNode("author"), @NamedAttributeNode("genres")})
+// используем entity граф для авторов, но можно было бы сделать и через join fetch. Entity graph предпочтительнее потому что он более переносим и не надо писать sql код
+@NamedEntityGraph(name = "book-entity-graph", attributeNodes = {@NamedAttributeNode("author")})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +31,7 @@ public class Book {
     @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "AUTHOR_ID_FK"))
     private Author author;
 
-//    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.SUBSELECT) // используем именно этот вариант, так как предполагаем, что жанров может быть очень много, и чтобы не загружать базу выгружаем жанры отдельно и потом в контексте джоиним их
     @ManyToMany(targetEntity = Genre.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "books_genres", joinColumns = @JoinColumn(name = "book_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id"))

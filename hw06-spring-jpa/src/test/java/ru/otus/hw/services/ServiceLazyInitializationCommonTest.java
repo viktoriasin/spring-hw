@@ -1,21 +1,23 @@
-package ru.otus.hw;
+package ru.otus.hw.services;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-@SpringBootTest
+@DataJpaTest
+@ComponentScan({"ru.otus.hw.repositories", "ru.otus.hw.services", "ru.otus.hw.converters"})
+@Transactional(Transactional.TxType.NEVER)
 public class ServiceLazyInitializationCommonTest {
 
     @Autowired
@@ -50,4 +52,8 @@ public class ServiceLazyInitializationCommonTest {
             .doesNotThrowAnyException();
     }
 
+    public void setCommentService(CommentService commentService) {
+        this.commentService = commentService;
+    }
 }
+

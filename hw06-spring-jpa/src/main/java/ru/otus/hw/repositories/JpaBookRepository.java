@@ -1,6 +1,9 @@
 package ru.otus.hw.repositories;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -20,11 +23,7 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public Optional<Book> findById(long id) {
-        EntityGraph<?> entityGraph = em.getEntityGraph("book-entity-graph");
-        TypedQuery<Book> query = em.createQuery("select bk from Book bk where bk.id = :id", Book.class);
-        query.setParameter("id", id)
-            .setHint("javax.persistence.fetchgraph", entityGraph);
-        return Optional.ofNullable(query.getSingleResult());
+        return Optional.ofNullable(em.find(Book.class, id)); // не делаем через граф, там как выгружаем одну книгу и тут не волнует проблемы n+1
 
     }
 
