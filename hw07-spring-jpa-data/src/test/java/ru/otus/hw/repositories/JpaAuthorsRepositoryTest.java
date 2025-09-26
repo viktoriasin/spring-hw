@@ -6,21 +6,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
-import ru.otus.hw.repositories.JpaAuthorRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с авторами ")
 @DataJpaTest
-@Import(JpaAuthorRepository.class)
+@ComponentScan("ru.otus.hw.repositories")
 class JpaAuthorsRepositoryTest {
 
     private static final int EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
-    private JpaAuthorRepository repositoryJpa;
+    private AuthorRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;

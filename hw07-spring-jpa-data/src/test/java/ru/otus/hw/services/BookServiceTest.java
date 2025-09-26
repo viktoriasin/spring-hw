@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -104,5 +105,10 @@ class BookServiceTest {
         bookService.deleteById(expectedBook.getId());
 
         assertNull(em.find(Book.class, newBook.getId()));
+    }
+
+    @Test
+    void deleteByIdThatDoesNotExist() {
+        assertThatCode(() -> bookService.deleteById(100L)).doesNotThrowAnyException();
     }
 }

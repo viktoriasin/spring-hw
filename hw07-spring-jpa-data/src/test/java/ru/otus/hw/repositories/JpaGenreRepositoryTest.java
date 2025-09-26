@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw.repositories.JpaGenreRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,11 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе JPA для работы с жанрами ")
 @DataJpaTest
-@Import(JpaGenreRepository.class)
+@ComponentScan("ru.otus.hw.repositories")
 class JpaGenreRepositoryTest {
 
     @Autowired
-    private JpaGenreRepository repositoryJpa;
+    private GenreRepository repositoryJpa;
 
     @Autowired
     private TestEntityManager em;
@@ -29,7 +29,7 @@ class JpaGenreRepositoryTest {
     @Test
     void shouldReturnCorrectGenresListByIds() {
         Set<Long> ids = LongStream.range(3L, 5L).boxed().collect(Collectors.toSet());
-        var actualGenres = repositoryJpa.findAllByIds(ids);
+        var actualGenres = repositoryJpa.findAllById(ids);
         assertThat(actualGenres).isNotNull().hasSize(2)
             .allMatch(s -> !s.getName().isEmpty());
         actualGenres.forEach(System.out::println);
