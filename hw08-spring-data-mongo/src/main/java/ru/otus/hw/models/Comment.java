@@ -13,11 +13,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document("comments")
 public class Comment {
     @Id
-    private long id;
+    private String id;
 
     @Field(name = "text")
     private String text;
 
     @Field(name = "book_id")
-    private long bookId;
+    private String bookId;
 }

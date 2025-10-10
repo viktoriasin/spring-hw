@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 @Document(collection = "books")
 public class Book {
     @Id
-    private long id;
+    private String id;
 
     @Field(name = "title")
     private String title;
@@ -28,9 +27,6 @@ public class Book {
 
     @Field(name = "genres")
     private List<Genre> genres;
-
-    @DocumentReference(lazy = true)
-    private List<Comment> comments;
 
     @Override
     public String toString() {

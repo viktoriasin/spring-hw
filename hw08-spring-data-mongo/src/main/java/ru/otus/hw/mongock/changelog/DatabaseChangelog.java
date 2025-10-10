@@ -2,14 +2,27 @@ package ru.otus.hw.mongock.changelog;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@ChangeLog
+@ChangeLog(order = "001")
 public class DatabaseChangelog {
 
     @ChangeSet(order = "001", id = "dropDb", author = "sinvic", runAlways = true)
@@ -20,9 +33,9 @@ public class DatabaseChangelog {
     @ChangeSet(order = "002", id = "insertAuthors", author = "sinvic")
     public void insertAuthors(MongoDatabase db) {
         MongoCollection<Document> myCollection = db.getCollection("authors");
-        var doc = new Document().append("name", "Author_1");
-        var doc2 = new Document().append("name", "Author_2");
-        var doc3 = new Document().append("name", "Author_3");
+        var doc = new Document().append("full_name", "Author_1");
+        var doc2 = new Document().append("full_name", "Author_2");
+        var doc3 = new Document().append("full_name", "Author_3");
         myCollection.insertMany(List.of(doc, doc2, doc3));
     }
 
@@ -35,24 +48,4 @@ public class DatabaseChangelog {
         }
         myCollection.insertMany(genres);
     }
-
-    @ChangeSet(order = "004", id = "insertBooks", author = "sinvic")
-    public void insertBooks(MongoDatabase db) {
-        MongoCollection<Document> myCollection = db.getCollection("books");
-
-        myCollection.insertOne(new Document().append("title", "BookTitle_1"));
-    }
 }
-
-//
-//insert into books(title, author_id)
-//values ('BookTitle_1', 1), ('BookTitle_2', 2), ('BookTitle_3', 3);
-//
-//insert into books_genres(book_id, genre_id)
-//values (1, 1),   (1, 2),
-//    (2, 3),   (2, 4),
-//    (3, 5),   (3, 6);
-//
-//insert into comments(text, book_id)
-//values ('Very good book', 1), ('Very bad book', 1), ('Wonderful book!', 3);
-//

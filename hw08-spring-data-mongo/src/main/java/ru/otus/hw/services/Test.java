@@ -31,22 +31,31 @@ public class Test {
     private final AuthorRepository authorRepository;
 
     public void test() {
-//        mt.createCollection("books");
-//        MongoCollection<Document> books = mt.getCollection("books");
-//        System.out.println(books.countDocuments());
-//
-//        List<Document> documents = mt.findAll(Document.class, "books");
-//        for (Document doc : documents) {
-//            System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
-//        }
+        MongoCollection<Document> books = mt.getCollection("books");
+        System.out.println(books.countDocuments());
 
-        Book book = new Book();
-        book.setAuthor(new Author());
-        genreRepository.insert(new Genre(1L, "tag"));
-        List<Document> documents = mt.findAll(Document.class, "genres");
+        List<Document> documents = mt.findAll(Document.class, "books");
         for (Document doc : documents) {
             System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
         }
+
+        List<Document> authors = mt.findAll(Document.class, "authors");
+        for (Document doc : authors) {
+            System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
+        }
+
+        List<Document> genres = mt.findAll(Document.class, "authors");
+        for (Document doc : genres) {
+            System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
+        }
+
+//        Book book = new Book();
+//        book.setAuthor(new Author());
+//        genreRepository.insert(new Genre(1L, "tag"));
+//        List<Document> documents = mt.findAll(Document.class, "genres");
+//        for (Document doc : documents) {
+//            System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
+//        }
 
 
     }
