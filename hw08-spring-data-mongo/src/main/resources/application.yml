@@ -1,32 +1,21 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-  sql:
-    init:
-      mode: always
-      data-locations: data.sql
-      schema-locations: schema.sql
-
-
-  jpa:
-    generate-ddl: false
-    #generate-ddl: true
-    hibernate:
-      ddl-auto: create
-      generate_statistics: true
-
-    show-sql: true
-
-    properties:
-      hibernate:
-        format_sql: true
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
   shell:
     interactive:
       enabled: false
+    command:
+      version:
+        enabled: false
 
-logging:
-  level:
-    #    ROOT: ERROR
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
