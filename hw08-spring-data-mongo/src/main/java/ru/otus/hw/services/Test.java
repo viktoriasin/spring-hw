@@ -6,7 +6,13 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 
@@ -14,17 +20,34 @@ import java.util.List;
 @Service
 public class Test {
 
-    @Autowired
-    private MongoTemplate mt;
+    private final MongoTemplate mt;
+
+    private final GenreRepository genreRepository;
+
+    private final BookRepository bookRepository;
+
+    private final CommentRepository commentRepository;
+
+    private final AuthorRepository authorRepository;
 
     public void test() {
-        mt.createCollection("books");
-        MongoCollection<Document> books = mt.getCollection("books");
-        System.out.println(books.countDocuments());
+//        mt.createCollection("books");
+//        MongoCollection<Document> books = mt.getCollection("books");
+//        System.out.println(books.countDocuments());
+//
+//        List<Document> documents = mt.findAll(Document.class, "books");
+//        for (Document doc : documents) {
+//            System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
+//        }
 
-        List<Document> documents = mt.findAll(Document.class, "books");
+        Book book = new Book();
+        book.setAuthor(new Author());
+        genreRepository.insert(new Genre(1L, "tag"));
+        List<Document> documents = mt.findAll(Document.class, "genres");
         for (Document doc : documents) {
             System.out.println(doc.toJson()); // Prints the BSON Document as a JSON string
         }
+
+
     }
 }

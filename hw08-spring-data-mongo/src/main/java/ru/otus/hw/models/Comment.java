@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import ru.otus.hw.models.Book;
 
 @Getter
 @Setter
@@ -19,6 +18,6 @@ public class Comment {
     @Field(name = "text")
     private String text;
 
-    @Field(name = "book")
-    private Book book;
+    @Field(name = "book_id")
+    private long bookId;
 }

@@ -12,5 +12,5 @@ public class CommentDto {
 
     private String text;
 
-    private BookDto book;
+    private long bookId;
 }
