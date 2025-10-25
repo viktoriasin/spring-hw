@@ -68,7 +68,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteById(String id) {
         bookRepository.deleteById(id);
-        commentRepository.deleteByBookId(id);
+        commentRepository.deleteAllByBookId(id);
     }
 
     private Book save(Book book, String title, String authorId, Set<String> genresIds) {

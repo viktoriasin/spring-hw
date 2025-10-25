@@ -3,8 +3,6 @@ package ru.otus.hw.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.otus.hw.dto.AuthorDto;
-import ru.otus.hw.dto.GenreDto;
 
 import java.util.List;
 

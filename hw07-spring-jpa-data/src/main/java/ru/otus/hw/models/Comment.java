@@ -2,7 +2,6 @@ package ru.otus.hw.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.otus.hw.models.Book;
 
 @Getter
 @Setter

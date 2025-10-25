@@ -10,7 +10,6 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,5 +65,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteById(String id) {
         commentRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteByBookId(String id) {
+        commentRepository.deleteAllByBookId(id);
     }
 }
