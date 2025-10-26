@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Edit person</title>
+  <style type="text/css">
+    body {
+        padding: 50px;
+    }
+
+    label {
+        display: inline-block;
+        width: 100px;
+    }
+
+    table, th, td {
+      border: 1px solid green;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+    }
+
+    input:read-only {
+        background: lightgray;
+    }
+
+    .row {
+        margin-top: 10px;
+    }
+
+    h3 {
+        background-image: url("../static/listmark.png");
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+
+    .errors {
+        color: red;
+    }
+  </style>
+
+  <style type="text/css" th:inline="text">
+    [[h3]] {
+        background-image: url([[@{/listmark.png}]]);
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<table class="books">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Genres</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="book : ${books}" th:object="${book}">
+    <td th:text="*{id}">1</td>
+    <td th:text="*{title}">Book Title</td>
+    <td th:text="*{author}">John Doe</td>
+    <td th:text="${#strings.arrayJoin(genres, ', ')}">Book genres</td>
+    <td>
+      <a href="bookEdit.html" th:href="@{/edit(id=*{id})}">Edit</a>
+    </td>
+    <td>
+      <a href="bookList.html" th:href="@{/delete(id=*{id})}">Delete book</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="row">
+  <a href="" th:href="@{/}"><button type="button">Go on main page</button></a>
+</div>
+
+</body>
+</html>
