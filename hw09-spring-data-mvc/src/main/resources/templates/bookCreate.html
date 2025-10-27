@@ -44,37 +44,40 @@
 </head>
 <body>
 
-<!-- Person edition -->
-<form id="create-form" action="bookCreate.html" th:action="@{/create}" th:method="post">
+
+<form id="create-form" action="bookCreate.html" th:action="@{/create}" th:method="post" th:object="${book}">
   <h3>Book Create:</h3>
 
 
   <div class="row">
     <label for="book-title-input">Title:</label>
-    <input id="book-title-input" name="title" type="text" value="Book title"/>
+    <input id="book-title-input" name="title" type="text" th:field="*{title}" value="Book title"/>
     <div class="errors" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Wrong book title error</div>
   </div>
 
   <div class="row">
-    <label for="book-author-input">Author:</label>
-    <input id="book-author-input" name="author" type="text" value="Book author"/>
-    <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Wrong book author error</div>
+    <label for="book-author-select">Author:</label>
+    <select id="book-author-select" name="author" th:field="*{authorId}" >
+      <option th:each="author : ${allAuthors}"
+              th:value="${author.id}"
+              th:text="${author.fullName}">Author Name</option>
+
+    </select>
   </div>
 
+
   <div class="row">
-    <label for="person-genres-select">Genres:</label>
-    <select id="person-genres-select" name="genre" multiple>
-      <option value="Genre_1" >Genre_1</option>
-      <option value="Genre_2" >Genre_2</option>
-      <option value="Genre_3" >Genre_3</option>
-      <option value="Genre_4">Genre_4</option>
-      <option value="Genre_5">Genre_5</option>
+    <label for="book-genres-select">Genres:</label>
+    <select id="book-genres-select" name="genre"  th:field="*{genresId}" multiple>
+      <option th:each="genre : ${allGenres}"
+              th:value="${genre.id}"
+              th:text="${genre.name}">Genre Name</option>
     </select>
   </div>
 
   <div class="row">
     <button type="submit">Save</button>
-    <a href="bookList.html" th:href="@{/bookList}"><button type="button">Cancel</button></a>
+    <a href="bookList.html" th:href="@{/}"><button type="button">Cancel</button></a>
   </div>
 </form>
 

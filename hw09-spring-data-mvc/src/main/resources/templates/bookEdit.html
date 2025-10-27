@@ -61,7 +61,7 @@
 
     <div class="row">
         <label for="book-author-input">Author:</label>
-        <input id="book-author-input" name="author" type="text" th:value="*{author.name}" value="Book author"/>
+        <input id="book-author-input" name="author" type="text" th:value="*{author.fullName}" value="Book author"/>
         <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author.fullName}">Wrong book author error</div>
     </div>
 

@@ -10,7 +10,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.forms.BookForm;
+import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
+import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
+    private final GenreService genreService;
+    private final AuthorService authorService;
 
     @GetMapping("/")
     public String listAllBookPage(Model model) {
@@ -46,29 +51,36 @@ public class BookController {
 
         bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(),
             book.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
-        return "redirect:/bookList";
+        return "redirect:/";
     }
 
     @GetMapping("/create")
     public String createBook(Model model) {
+        model.addAttribute("allGenres", genreService.findAll());
+        model.addAttribute("allAuthors", authorService.findAll());
+        model.addAttribute("book", new BookForm());
+
         return "bookCreate";
     }
 
     @PostMapping("/create")
-    public String createBook(@Valid @ModelAttribute("book") BookDto book,
+    public String createBook(@Valid @ModelAttribute("book") BookForm bookForm,
                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "edit";
+            log.info(bindingResult.getAllErrors().toString());
+            return "bookCreate";
         }
 
-        bookService.insert(book.getTitle(), book.getAuthor().getId(),
-            book.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
-        return "redirect:/bookList";
+        bookService.insert(bookForm.getTitle(), Long.parseLong(bookForm.getAuthorId()),
+            bookForm.getGenresId().stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toSet()));
+        return "redirect:/";
     }
 
     @DeleteMapping("/delete")
     public String deleteBook(@RequestParam("id") long id, Model model) {
        bookService.deleteById(id);
-        return "redirect:/bookList";
+        return "redirect:/";
     }
 }
