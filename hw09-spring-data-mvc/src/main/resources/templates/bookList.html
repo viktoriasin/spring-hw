@@ -66,24 +66,28 @@
   <tr th:each="book : ${books}" th:object="${book}">
     <td th:text="*{id}">1</td>
     <td th:text="*{title}">Book Title</td>
-    <td th:text="*{author}">John Doe</td>
-    <td th:text="${#strings.arrayJoin(genres, ', ')}">Book genres</td>
+    <td th:text="*{author.fullName}">John Doe</td>
+    <td th:text="*{genres}">Book genres</td>
+<!--    ${#strings.arrayJoin(genres, ', ')}"-->
     <td>
       <a href="bookEdit.html" th:href="@{/edit(id=*{id})}">Edit</a>
     </td>
     <td>
-      <a href="bookList.html" th:href="@{/delete(id=*{id})}">Delete book</a>
+      <form action="#" th:action="@{/delete(id=*{id})}" th:method="delete" >
+        <input type="hidden" name="_method" value="delete" />
+        <button type="submit" id="submitButton"> Delete </button>
+      </form>
     </td>
   </tr>
   </tbody>
 </table>
 
 <div class="row">
-  <a href="bookCreate.html" th:href="@{/bookCreate}"><button type="button">Create new book</button></a>
+  <a href="bookCreate.html" th:href="@{/create}"><button type="button">Create new book</button></a>
 </div>
 
 <div class="row">
-  <a href="" th:href="@{/}"><button type="button">Go on main page</button></a>
+  <a href="" th:href="@{/bookList}"><button type="button">Go on main page</button></a>
 </div>
 
 </body>

@@ -61,8 +61,8 @@
 
     <div class="row">
         <label for="book-author-input">Author:</label>
-        <input id="book-author-input" name="author" type="text" th:value="*{author}" value="Book author"/>
-        <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Wrong book author error</div>
+        <input id="book-author-input" name="author" type="text" th:value="*{author.name}" value="Book author"/>
+        <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author.fullName}">Wrong book author error</div>
     </div>
 
     <div class="row">
@@ -78,7 +78,7 @@
 
     <div class="row">
         <button type="submit">Save</button>
-        <a href="bookList.html" th:href="@{/}"><button type="button">Cancel</button></a>
+        <a href="bookList.html" th:href="@{/bookList}"><button type="button">Cancel</button></a>
     </div>
 </form>
 
