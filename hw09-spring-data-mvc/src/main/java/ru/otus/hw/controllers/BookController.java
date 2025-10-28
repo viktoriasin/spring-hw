@@ -65,9 +65,12 @@ public class BookController {
 
     @PostMapping("/create")
     public String createBook(@Valid @ModelAttribute("book") BookForm bookForm,
-                             BindingResult bindingResult) {
+                             BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
+            model.addAttribute("allGenres", genreService.findAll());
+            model.addAttribute("allAuthors", authorService.findAll());
+            model.addAttribute("book", bookForm);
             return "bookCreate";
         }
 
@@ -78,7 +81,7 @@ public class BookController {
         return "redirect:/";
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public String deleteBook(@RequestParam("id") long id, Model model) {
        bookService.deleteById(id);
         return "redirect:/";

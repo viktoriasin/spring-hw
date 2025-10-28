@@ -73,6 +73,7 @@
               th:value="${genre.id}"
               th:text="${genre.name}">Genre Name</option>
     </select>
+    <div class="errors" th:if="${#fields.hasErrors('genresId')}" th:errors="*{genresId}">Wrong genres id error</div>
   </div>
 
   <div class="row">
