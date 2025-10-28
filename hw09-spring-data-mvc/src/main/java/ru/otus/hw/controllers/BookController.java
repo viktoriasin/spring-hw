@@ -7,7 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.forms.BookForm;
@@ -37,40 +41,54 @@ public class BookController {
 
     @GetMapping("/edit")
     public String editBookPage(@RequestParam("id") long id, Model model) {
-        BookDto book = bookService.findById(id).orElseThrow(NotFoundException::new);
-        model.addAttribute("book", book);
+        BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
+
+        BookForm bookForm = new BookForm();
+        bookForm.setId(String.valueOf(bookDto.getId()));
+        bookForm.setTitle(bookDto.getTitle());
+        bookForm.setAuthorId(String.valueOf(bookDto.getAuthor().getId()));
+        List<String> genreIds = bookDto.getGenres().stream()
+            .map(GenreDto::getId)
+            .map(String::valueOf)
+            .toList();
+        bookForm.setGenresId(genreIds);
+
+        fillModel(model, genreService.findAll(), authorService.findAll(), bookForm);
+
         return "bookEdit";
     }
 
     @PostMapping("/edit")
-    public String saveBook(@Valid @ModelAttribute("book") BookDto book,
-                             BindingResult bindingResult) {
+    public String editBookPage(@Valid @ModelAttribute("bookForm") BookForm bookForm,
+                               BindingResult bindingResult,
+                               Model model) {
         if (bindingResult.hasErrors()) {
-            return "edit";
+            fillModel(model, genreService.findAll(), authorService.findAll(), bookForm);
+
+            return "bookEdit";
         }
 
-        bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(),
-            book.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
+        bookService.update(Long.parseLong(bookForm.getId()), bookForm.getTitle(), Long.parseLong(bookForm.getAuthorId()),
+            bookForm.getGenresId().stream()
+                .map(Long::parseLong)
+                .collect(Collectors.toSet()));
         return "redirect:/";
     }
 
     @GetMapping("/create")
     public String createBook(Model model) {
-        model.addAttribute("allGenres", genreService.findAll());
-        model.addAttribute("allAuthors", authorService.findAll());
-        model.addAttribute("book", new BookForm());
+        fillModel(model, genreService.findAll(), authorService.findAll(), new BookForm());
 
         return "bookCreate";
     }
 
     @PostMapping("/create")
-    public String createBook(@Valid @ModelAttribute("book") BookForm bookForm,
+    public String createBook(@Valid @ModelAttribute("bookForm") BookForm bookForm,
                              BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
-            model.addAttribute("allGenres", genreService.findAll());
-            model.addAttribute("allAuthors", authorService.findAll());
-            model.addAttribute("book", bookForm);
+
+            fillModel(model, genreService.findAll(), authorService.findAll(), bookForm);
             return "bookCreate";
         }
 
@@ -82,8 +100,16 @@ public class BookController {
     }
 
     @PostMapping("/delete")
-    public String deleteBook(@RequestParam("id") long id, Model model) {
+    public String deleteBook(@RequestParam("id") long id) {
        bookService.deleteById(id);
         return "redirect:/";
+    }
+
+
+    private void fillModel(Model model, List<GenreDto> allGenres, List<AuthorDto> allAuthors, BookForm bookForm) {
+        model.addAttribute("allGenres", allGenres);
+        model.addAttribute("allAuthors", allAuthors);
+        model.addAttribute("bookForm", bookForm);
+
     }
 }

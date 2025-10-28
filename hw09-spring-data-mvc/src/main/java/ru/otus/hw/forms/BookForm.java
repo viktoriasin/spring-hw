@@ -12,8 +12,10 @@ import java.util.List;
 @Setter
 public class BookForm {
 
+    private String id;
+
     @NotBlank(message = "{title-field-should-not-be-blank}")
-    @Size(min = 2, max = 10, message = "{title-field-should-has-expected-size}")
+    @Size(min = 2, max = 50, message = "{title-field-should-has-expected-size}")
     private String title;
 
     private String authorId;
