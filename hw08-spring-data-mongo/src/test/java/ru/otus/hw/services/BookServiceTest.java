@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 @ComponentScan({"ru.otus.hw.repositories", "ru.otus.hw.services", "ru.otus.hw.converters"})
-@Transactional(Transactional.TxType.NEVER)
 @TestPropertySource(properties = {"mongock.enabled=false"})
 class BookServiceTest {
 

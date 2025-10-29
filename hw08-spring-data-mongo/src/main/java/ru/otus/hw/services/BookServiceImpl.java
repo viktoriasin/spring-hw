@@ -2,7 +2,6 @@ package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -13,7 +12,6 @@ import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
-import ru.otus.hw.services.BookService;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,21 +33,18 @@ public class BookServiceImpl implements BookService {
     private final CommentRepository commentRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<BookDto> findById(String id) {
         Optional<Book> bookOptional = bookRepository.findById(id);
         return bookOptional.map(bookConverter::bookToDto);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookDto> findAll() {
         List<Book> books = bookRepository.findAll();
         return books.stream().map(bookConverter::bookToDto).toList();
     }
 
     @Override
-    @Transactional
     public BookDto insert(String title, String authorId, Set<String> genresIds) {
         Book book = new Book();
 
@@ -57,7 +52,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public BookDto update(String id, String title, String authorId, Set<String> genresIds) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no book with id %s to update".formatted(id)));
 
@@ -65,7 +59,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public void deleteById(String id) {
         bookRepository.deleteById(id);
         commentRepository.deleteAllByBookId(id);

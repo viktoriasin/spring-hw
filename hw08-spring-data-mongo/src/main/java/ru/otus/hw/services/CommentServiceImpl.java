@@ -25,7 +25,6 @@ public class CommentServiceImpl implements CommentService {
     private final CommentConverter commentConverter;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<CommentDto> findById(String id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);
         return commentOptional.map(commentConverter::commentToDto);
@@ -34,12 +33,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentDto> findByBookId(String id) {
-        List<Comment> comments = commentRepository.findByBookid(id);
+        List<Comment> comments = commentRepository.findByBookId(id);
         return comments.stream().map(commentConverter::commentToDto).toList();
     }
 
     @Override
-    @Transactional
     public CommentDto insert(String text, Book book) {
         Optional<Book> bookOpt = bookRepository.findById(book.getId());
         if (bookOpt.isEmpty()) {
@@ -53,7 +51,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public CommentDto update(String id, String text) {
         Comment comment = commentRepository.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Comment with id %d is not found!".formatted(id)));
@@ -62,7 +59,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public void deleteById(String id) {
         commentRepository.deleteById(id);
     }
