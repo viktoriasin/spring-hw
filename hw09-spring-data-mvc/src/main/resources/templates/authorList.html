@@ -61,9 +61,9 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="author : ${authors}" th:object="${author}">
+  <tr th:each="author : ${allAuthors}" th:object="${author}">
     <td th:text="*{id}">1</td>
-    <td th:text="*{name}">Author Name</td>
+    <td th:text="*{fullName}">Author Name</td>
   </tr>
   </tbody>
 </table>

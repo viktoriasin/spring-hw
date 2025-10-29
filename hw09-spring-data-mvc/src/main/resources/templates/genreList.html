@@ -61,7 +61,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="genre : ${genres}" th:object="${genre}">
+    <tr th:each="genre : ${allGenres}" th:object="${genre}">
         <td th:text="*{id}">1</td>
         <td th:text="*{name}">Genre Name</td>
     </tr>
