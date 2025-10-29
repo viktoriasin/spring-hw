@@ -2,7 +2,6 @@ package ru.otus.hw.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,9 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ModelAndView handeNotFoundException(NotFoundException ex) {
-        String errorText = messageSource.getMessage("book-not-found-error", null,
-                LocaleContextHolder.getLocale());
-        return new ModelAndView("customError", "errorText", errorText);
+        return new ModelAndView("customError", "errorText", "Book not found");
     }
 
 }

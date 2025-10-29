@@ -101,7 +101,8 @@ public class BookController {
 
     @PostMapping("/delete")
     public String deleteBook(@RequestParam("id") long id) {
-       bookService.deleteById(id);
+        bookService.findById(id).orElseThrow(NotFoundException::new);
+        bookService.deleteById(id);
         return "redirect:/";
     }
 
