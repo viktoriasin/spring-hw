@@ -53,6 +53,10 @@
 </head>
 <body>
 
+<div>
+    <h2>Book:</h2>
+</div>
+
 <table class="book">
     <thead>
     <tr>
@@ -63,34 +67,41 @@
     </tr>
     </thead>
     <tbody>
+    <tr th:object="${book}">
+        <td th:text="*{id}">1</td>
+        <td th:text="*{title}">Book Title</td>
+        <td th:text="*{author.fullName}">John Doe</td>
+        <td th:text="*{#strings.listJoin(genres.![name], ', ')}">Book genres</td>
 
-    <td th:text="*{id}">1</td>
-    <td th:text="*{title}">Book Title</td>
-    <td th:text="*{author.fullName}">John Doe</td>
-    <td th:text="${#strings.arrayJoin(genres, ', ')}">Book genres</td>
-    <td>
-        <a href="bookEdit.html" th:href="@{/edit(id=*{id})}">Edit</a>
-    </td>
-    <td>
-        <a href="bookList.html" th:href="@{/delete(id=*{id})}">Delete book</a>
-    </td>
+    </tr>
     </tbody>
 </table>
 
-<table class="comments">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Text</th>
-    </tr>
-    </thead>
-    <tbody>
+<div>
+    <h2>Comments of the book:</h2>
+</div>
+
+
+<div th:if="${#lists.isEmpty(comments)}">
+    <p>Список комментариев пуст.</p>
+</div>
+<div th:unless="${#lists.isEmpty(comments)}">
+    <table class="comments">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Text</th>
+        </tr>
+        </thead>
+        <tbody>
     <tr th:each="comment : ${comments}" th:object="${comment}">
         <td th:text="*{id}">1</td>
         <td th:text="*{text}">Comment Text</td>
     </tr>
+    </table>
+</div>
     </tbody>
-</table>
+
 
 <div class="row">
     <a href="" th:href="@{/}">

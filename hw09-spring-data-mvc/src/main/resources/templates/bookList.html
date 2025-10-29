@@ -68,8 +68,8 @@
     <td th:text="*{id}">1</td>
     <td th:text="*{title}">Book Title</td>
     <td th:text="*{author.fullName}">John Doe</td>
-    <td th:text="*{genres}">Book genres</td>
-<!--    ${#strings.arrayJoin(genres, ', ')}"-->
+    <td th:text="*{#strings.listJoin(genres.![name], ', ')}">Book genres</td>
+
     <td>
       <a href="bookWithComments.html" th:href="@{/comments(bookId=*{id})}">Comments</a>
     </td>

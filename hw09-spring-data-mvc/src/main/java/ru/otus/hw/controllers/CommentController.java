@@ -29,20 +29,9 @@ public class CommentController {
         List<CommentDto> comments = commentService.findByBookId(id);
         BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
 
-        BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
+        model.addAttribute("book", bookDto);
+        model.addAttribute("comments", comments);
 
-        BookForm bookForm = new BookForm();
-        bookForm.setId(String.valueOf(bookDto.getId()));
-        bookForm.setTitle(bookDto.getTitle());
-        bookForm.setAuthorId(String.valueOf(bookDto.getAuthor().getId()));
-        List<String> genreIds = bookDto.getGenres().stream()
-            .map(GenreDto::getId)
-            .map(String::valueOf)
-            .toList();
-        bookForm.setGenresId(genreIds);
-
-        fillModel(model, genreService.findAll(), authorService.findAll(), bookForm);
-
-        return "bookEdit";
+        return "bookWithComments";
     }
 }
