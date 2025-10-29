@@ -60,6 +60,7 @@
     <th>Title</th>
     <th>Author</th>
     <th>Genres</th>
+    <th>Комментарии</th>
   </tr>
   </thead>
   <tbody>
@@ -69,6 +70,9 @@
     <td th:text="*{author.fullName}">John Doe</td>
     <td th:text="*{genres}">Book genres</td>
 <!--    ${#strings.arrayJoin(genres, ', ')}"-->
+    <td>
+      <a href="bookWithComments.html" th:href="@{/comments(bookId=*{id})}">Comments</a>
+    </td>
     <td>
       <a href="bookEdit.html" th:href="@{/edit(id=*{id})}">Edit</a>
     </td>
