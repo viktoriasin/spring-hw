@@ -13,6 +13,6 @@ public class CommentConverter {
     private final BookConverter bookConverter;
 
     public CommentDto commentToDto(Comment comment) {
-        return new CommentDto(comment.getId(), comment.getText(), comment.getBookId());
+        return new CommentDto(comment.getId(), comment.getText(), bookConverter.bookToDto(comment.getBook()));
     }
 }

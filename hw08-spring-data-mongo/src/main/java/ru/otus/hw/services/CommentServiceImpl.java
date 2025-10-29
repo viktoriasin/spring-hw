@@ -43,9 +43,10 @@ public class CommentServiceImpl implements CommentService {
         if (bookOpt.isEmpty()) {
             throw new EntityNotFoundException("Book with id %d for saving comment is not found!".formatted(book.getId()));
         }
+        Book book1 = bookOpt.get();
         Comment comment = new Comment();
         comment.setText(text);
-        comment.setBookId(book.getId());
+        comment.setBook(new Book(book1.getId(), book1.getTitle(), book1.getAuthor(), book1.getGenres()));
 
         return commentConverter.commentToDto(commentRepository.save(comment));
     }

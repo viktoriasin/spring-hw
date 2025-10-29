@@ -63,13 +63,13 @@ class CommentServiceTest {
 
         comment = new Comment();
         comment.setText("Hello world!");
-        comment.setBookId(book.getId());
+        comment.setBook(book);
         mongoTemplate.save(comment);
 
 
         comment2 = new Comment();
         comment2.setText("Hello world2!");
-        comment2.setBookId(book.getId());
+        comment2.setBook(book);
         mongoTemplate.save(comment2);
 
         comments = List.of(comment, comment2);
