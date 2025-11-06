@@ -14,7 +14,7 @@ de:
   flapdoodle:
     mongodb:
       embedded:
-        version: 4.4.18
+        version: 8.0.5
 
 mongock:
   enabled: false
