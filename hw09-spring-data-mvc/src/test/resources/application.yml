@@ -15,7 +15,7 @@ spring:
     open-in-view: false
     #generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
       generate_statistics: true
 
     show-sql: true
