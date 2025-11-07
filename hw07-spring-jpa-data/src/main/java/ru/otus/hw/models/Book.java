@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Genre;
 
 import java.util.List;
 

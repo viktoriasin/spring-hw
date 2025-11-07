@@ -9,8 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 import java.util.Optional;
