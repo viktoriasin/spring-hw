@@ -3,16 +3,14 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
-import ru.otus.hw.services.BookService;
+import ru.otus.hw.rest.dto.BookDto;
+import ru.otus.hw.rest.exceptions.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,20 +27,18 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    private final BookConverter bookConverter;
-
     @Override
     @Transactional(readOnly = true)
     public Optional<BookDto> findById(long id) {
         Optional<Book> bookOptional = bookRepository.findById(id);
-        return bookOptional.map(bookConverter::bookToDto);
+        return bookOptional.map(BookDto::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BookDto> findAll() {
         List<Book> books = bookRepository.findAll();
-        return books.stream().map(bookConverter::bookToDto).toList();
+        return books.stream().map(BookDto::toDto).toList();
     }
 
     @Override
@@ -50,7 +46,7 @@ public class BookServiceImpl implements BookService {
     public BookDto insert(String title, long authorId, Set<Long> genresIds) {
         Book book = new Book(0, null, null, null);
 
-        return bookConverter.bookToDto(save(book, title, authorId, genresIds));
+        return BookDto.toDto(save(book, title, authorId, genresIds));
     }
 
     @Override
@@ -58,7 +54,7 @@ public class BookServiceImpl implements BookService {
     public BookDto update(long id, String title, long authorId, Set<Long> genresIds) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no book with id %s to update".formatted(id)));
 
-        return bookConverter.bookToDto(save(book, title, authorId, genresIds));
+        return BookDto.toDto(save(book, title, authorId, genresIds));
     }
 
     @Override

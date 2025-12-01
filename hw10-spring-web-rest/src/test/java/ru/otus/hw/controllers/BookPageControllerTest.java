@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.dto.AuthorDto;
-import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.rest.dto.AuthorDto;
+import ru.otus.hw.rest.dto.BookDto;
+import ru.otus.hw.rest.dto.GenreDto;
 import ru.otus.hw.forms.BookForm;
+import ru.otus.hw.page.BookPageController;
+import ru.otus.hw.rest.exceptions.NotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -24,10 +26,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.otus.hw.controllers.GlobalExceptionHandler.ERROR_STRING;
+import static ru.otus.hw.rest.GlobalExceptionHandler.ERROR_STRING;
 
-@WebMvcTest(BookController.class)
-class BookControllerTest {
+@WebMvcTest(BookPageController.class)
+class BookPageControllerTest {
 
     @Autowired
     private MockMvc mvc;

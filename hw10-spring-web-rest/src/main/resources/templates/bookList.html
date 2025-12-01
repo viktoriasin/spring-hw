@@ -2,15 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8"/>
-  <title>List book</title>
+  <title>List books</title>
   <style type="text/css">
     body {
         padding: 50px;
-    }
-
-    label {
-        display: inline-block;
-        width: 100px;
     }
 
     table, th, td {
@@ -20,10 +15,7 @@
 
     th, td {
       padding: 10px;
-    }
-
-    input:read-only {
-        background: lightgray;
+      text-align: left;
     }
 
     .row {
@@ -40,6 +32,16 @@
     .errors {
         color: red;
     }
+
+    .loading {
+        color: #666;
+        font-style: italic;
+    }
+
+    .error-message {
+        color: red;
+        margin: 10px 0;
+    }
   </style>
 
   <style type="text/css" th:inline="text">
@@ -53,35 +55,28 @@
 </head>
 <body>
 
-<table class="books">
+<h3>Books list</h3>
+
+<!-- Сообщение о загрузке -->
+<div id="loading-message" class="loading">Loading books...</div>
+
+<!-- Сообщение об ошибке -->
+<div id="error-message" class="error-message" style="display: none;"></div>
+
+<!-- Таблица книг -->
+<table class="books" id="books-table">
   <thead>
   <tr>
     <th>ID</th>
     <th>Title</th>
     <th>Author</th>
     <th>Genres</th>
-    <th>Комментарии</th>
+    <th>Comments</th>
+    <th>Actions</th>
   </tr>
   </thead>
-  <tbody>
-  <tr th:each="book : ${books}" th:object="${book}">
-    <td th:text="*{id}">1</td>
-    <td th:text="*{title}">Book Title</td>
-    <td th:text="*{author.fullName}">John Doe</td>
-    <td th:text="*{#strings.listJoin(genres.![name], ', ')}">Book genres</td>
-
-    <td>
-      <a href="bookWithComments.html" th:href="@{/comments(bookId=*{id})}">Comments</a>
-    </td>
-    <td>
-      <a href="bookEdit.html" th:href="@{/edit(id=*{id})}">Edit</a>
-    </td>
-    <td>
-      <form action="#" th:action="@{/delete(id=*{id})}" th:method="post" >
-        <button type="submit" id="submitButton"> Delete </button>
-      </form>
-    </td>
-  </tr>
+  <tbody id="books-tbody">
+  <!-- Здесь будут динамически добавлены строки -->
   </tbody>
 </table>
 
@@ -90,7 +85,7 @@
 </div>
 
 <div class="row">
-  <a href="" th:href="@{/}"><button type="button">Go on main page</button></a>
+  <a href="" th:href="@{/}"><button type="button">Go to main page</button></a>
 </div>
 
 <div class="row">
@@ -100,6 +95,87 @@
 <div class="row">
   <a href="" th:href="@{/authors}"><button type="button">All authors</button></a>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const tbody = document.getElementById('books-tbody');
+      const loadingMessage = document.getElementById('loading-message');
+      const errorMessage = document.getElementById('error-message');
+
+      // Функция для загрузки книг
+      function loadBooks() {
+          fetch('/api/v1/books')
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error(`HTTP error# Status: ${response.status}`);
+                  }
+                  return response.json();
+              })
+              .then(books => {
+                  // Очищаем таблицу
+                  tbody.innerHTML = '';
+
+                  // Заполняем таблицу данными
+                  books.forEach(book => {
+                      const row = document.createElement('tr');
+
+                      row.innerHTML = `
+                          <td>${book.id}</td>
+                          <td>${book.title || ''}</td>
+                          <td>${book.author?.fullName || 'Unknown'}</td>
+                          <td>${book.genres?.map(g => g.name).join(', ') || 'No genres'}</td>
+                          <td>
+                              <a href="/comments?bookId=${book.id}">Comments</a>
+                          </td>
+                          <td>
+                              <a href="/edit?id=${book.id}" class="action-link">Edit</a> |
+                              <a href="#" onclick="deleteBook(${book.id})" class="action-link" style="color: red;">Delete</a>
+                          </td>
+                      `;
+
+                      tbody.appendChild(row);
+                  });
+
+                  // Скрываем сообщение о загрузке
+                  loadingMessage.style.display = 'none';
+              })
+              .catch(error => {
+                  console.error('Error loading books:', error);
+                  loadingMessage.style.display = 'none';
+                  errorMessage.textContent = `Failed to load books: ${error.message}`;
+                  errorMessage.style.display = 'block';
+              });
+      }
+
+      // Функция для удаления книги
+      function deleteBook(id) {
+          if (!confirm(`Are you sure you want to delete book #${id}?`)) {
+              return;
+          }
+
+          fetch(`/api/v1/books/${id}`, {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          })
+          .then(response => {
+              if (response.ok) {
+                  alert('Book deleted successfully!');
+                  loadBooks(); // Обновляем список
+              } else {
+                  throw new Error('Delete failed');
+              }
+          })
+          .catch(error => {
+              alert(`Delete failed: ${error.message}`);
+          });
+      }
+
+      // Загружаем книги при открытии страницы
+      loadBooks();
+  });
+</script>
 
 </body>
 </html>

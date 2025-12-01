@@ -6,11 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.CommentDto;
-import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
+import ru.otus.hw.rest.dto.BookDto;
+import ru.otus.hw.rest.dto.CommentDto;
+import ru.otus.hw.rest.dto.GenreDto;
 
 import java.util.List;
 import java.util.Optional;

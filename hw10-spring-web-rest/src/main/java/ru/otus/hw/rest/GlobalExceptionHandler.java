@@ -1,10 +1,11 @@
-package ru.otus.hw.controllers;
+package ru.otus.hw.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.otus.hw.rest.exceptions.NotFoundException;
 
 @RequiredArgsConstructor
 @ControllerAdvice

@@ -1,8 +1,8 @@
-package ru.otus.hw.controllers;
+package ru.otus.hw.rest.exceptions;
 
 public class NotFoundException extends RuntimeException{
 
-    NotFoundException() {
+    public NotFoundException() {
         super("Book not found");
     }
 }
