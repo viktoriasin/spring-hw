@@ -25,7 +25,9 @@
         <module>hw05-spring-jdbc</module>
         <module>hw06-spring-jpa</module>
         <module>hw07-spring-jpa-data</module>
+        <module>hw08-spring-data-mongo</module>
         <module>hw09-spring-data-mvc</module>
+        <module>hw08-spring-data-mongo</module>
     </modules>
 
     <properties>

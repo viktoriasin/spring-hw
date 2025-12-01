@@ -1,0 +1,30 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 0 # when flapdoodle using
+  shell:
+    interactive:
+      enabled: false
+    command:
+      version:
+        enabled: false
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 8.0.5
+
+mongock:
+  enabled: false
+  mongo-db:
+    write-concern:
+      journal: false
+  read-concern: local
+
+logging:
+  level:
+    #    ROOT: ERROR
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

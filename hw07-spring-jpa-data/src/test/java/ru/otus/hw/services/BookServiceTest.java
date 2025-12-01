@@ -12,7 +12,6 @@ import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.services.BookService;
 
 import java.util.List;
 import java.util.Optional;
