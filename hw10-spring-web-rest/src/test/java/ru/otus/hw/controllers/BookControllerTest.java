@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.controllers.BookController;
-import ru.otus.hw.controllers.NotFoundException;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
@@ -21,11 +19,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.otus.hw.controllers.GlobalExceptionHandler.ERROR_STRING;
 
 @WebMvcTest(BookController.class)
 class BookControllerTest {
@@ -84,9 +83,10 @@ class BookControllerTest {
 
     @Test
     void shouldRenderErrorPageWhenBookNotFound() throws Exception {
-        when(bookService.findById(1L)).thenThrow(new NotFoundException());
+        given(bookService.findById(1L)).willReturn(Optional.empty());
         mvc.perform(get("/edit").param("id", "1"))
-            .andExpect(view().name("customError"));
+            .andExpect(status().isNotFound())
+            .andExpect(content().string(ERROR_STRING));
     }
 
     @Test

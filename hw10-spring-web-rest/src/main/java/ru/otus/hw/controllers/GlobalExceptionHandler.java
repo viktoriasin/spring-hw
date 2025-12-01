@@ -2,10 +2,9 @@ package ru.otus.hw.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
-import ru.otus.hw.controllers.NotFoundException;
 
 @RequiredArgsConstructor
 @ControllerAdvice
@@ -13,9 +12,11 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
+    public static final String ERROR_STRING = "No book are found.";
+
     @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handeNotFoundException(NotFoundException ex) {
-        return new ModelAndView("customError", "errorText", "Book not found");
+    public ResponseEntity<String> handeNotFoundException(NotFoundException ex) {
+        return ResponseEntity.status(404).body(ERROR_STRING);
     }
 
 }
