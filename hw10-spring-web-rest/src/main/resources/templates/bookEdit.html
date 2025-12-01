@@ -56,10 +56,10 @@
 
 <h3>Book Edit</h3>
 
-<!-- Сообщение о загрузке -->
+
 <div id="loading-message" class="loading">Loading book data...</div>
 
-<!-- Сообщение об ошибке -->
+
 <div id="error-message" class="error-message" style="display: none;"></div>
 
 <form id="edit-form">
@@ -96,123 +96,161 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('edit-form');
-        const saveButton = document.getElementById('save-button');
-        const loadingMessage = document.getElementById('loading-message');
-        const errorMessage = document.getElementById('error-message');
+    const form = document.getElementById('edit-form');
+    const saveButton = document.getElementById('save-button');
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
 
-        const bookId = new URLSearchParams(window.location.search).get('id');
+    const bookId = new URLSearchParams(window.location.search).get('id');
 
-        if (!bookId) {
-            errorMessage.textContent = 'Book ID is missing!';
-            errorMessage.style.display = 'block';
-            loadingMessage.style.display = 'none';
-            return;
-        }
+    if (!bookId) {
+        errorMessage.textContent = 'Book ID is missing!';
+        errorMessage.style.display = 'block';
+        loadingMessage.style.display = 'none';
+        return;
+    }
 
-        function loadBook() {
-            fetch(`/api/v1/books/${bookId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error# Status: ${response.status}`);
-                    return response.json();
-                })
-                .then(book => {
-                    populateForm(book);
-                    loadingMessage.style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error loading book:', error);
-                    errorMessage.textContent = `Failed to load book: ${error.message}`;
-                    errorMessage.style.display = 'block';
-                    loadingMessage.style.display = 'none';
-                });
-        }
-
-        // Заполняем форму данными
-        function populateForm(book) {
-            document.getElementById('id-input').value = book.id;
-            document.getElementById('book-title-input').value = book.title || '';
-
-            // Заполняем список авторов
-            const authorSelect = document.getElementById('book-author-select');
-            authorSelect.innerHTML = '';
-            fetch('/api/v1/authors')
-                .then(response => response.json())
-                .then(authors => {
-                    authors.forEach(author => {
-                        const option = document.createElement('option');
-                        option.value = author.id;
-                        option.textContent = author.fullName;
-                        if (author.id === book.author?.id) {
-                            option.selected = true;
-                        }
-                        authorSelect.appendChild(option);
-                    });
-                });
-
-            // Заполняем список жанров
-            const genreSelect = document.getElementById('book-genres-select');
-            genreSelect.innerHTML = '';
-            fetch('/api/v1/genres')
-                .then(response => response.json())
-                .then(genres => {
-                    genres.forEach(genre => {
-                        const option = document.createElement('option');
-                        option.value = genre.id;
-                        option.textContent = genre.name;
-                        if (book.genres?.some(g => g.id === genre.id)) {
-                            option.selected = true;
-                        }
-                        genreSelect.appendChild(option);
-                    });
-                });
-        }
-
-        // Сохраняем изменения
-        function saveBook() {
-            const formData = {
-                id: document.getElementById('id-input').value,
-                title: document.getElementById('book-title-input').value,
-                authorId: document.getElementById('book-author-select').value,
-                genresId: Array.from(document.getElementById('book-genres-select').selectedOptions)
-                    .map(option => option.value)
-            };
-
-            fetch(`/api/v1/books/${formData.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
+    // Загружаем данные книги
+    function loadBook() {
+        fetch(`/api/v1/books/${bookId}`)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error# Status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error# Status: ${response.status}`);
                 return response.json();
             })
-            .then(() => {
-                // Редирект на главную страницу
-                window.location.href = '/';
+            .then(book => {
+                populateForm(book);
+                loadingMessage.style.display = 'none';
             })
             .catch(error => {
-                console.error('Save error:', error);
-                // Показываем ошибку валидации, если есть
-                if (error.message.includes('400')) {
-                    document.getElementById('title-error').style.display = 'block';
-                } else {
-                    errorMessage.textContent = `Save failed: ${error.message}`;
-                    errorMessage.style.display = 'block';
+                console.error('Error loading book:', error);
+                errorMessage.textContent = `Failed to load book: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+            });
+    }
+
+    // Заполняем форму данными
+    function populateForm(book) {
+        document.getElementById('id-input').value = book.id;
+        document.getElementById('book-title-input').value = book.title || '';
+
+        // Заполняем список авторов
+        const authorSelect = document.getElementById('book-author-select');
+        authorSelect.innerHTML = '';
+        fetch('/api/v1/authors')
+            .then(response => response.json())
+            .then(authors => {
+                authors.forEach(author => {
+                    const option = document.createElement('option');
+                    option.value = author.id;
+                    option.textContent = author.fullName;
+                    if (author.id === book.author?.id) {
+                        option.selected = true;
+                    }
+                    authorSelect.appendChild(option);
+                });
+            });
+
+        // Заполняем список жанров
+        const genreSelect = document.getElementById('book-genres-select');
+        genreSelect.innerHTML = '';
+        fetch('/api/v1/genres')
+            .then(response => response.json())
+            .then(genres => {
+                genres.forEach(genre => {
+                    const option = document.createElement('option');
+                    option.value = genre.id;
+                    option.textContent = genre.name;
+                    if (book.genres?.some(g => g.id === genre.id)) {
+                        option.selected = true;
+                    }
+                    genreSelect.appendChild(option);
+                });
+            });
+    }
+
+    // Сохраняем изменения
+    function saveBook() {
+        const formData = {
+            id: document.getElementById('id-input').value,
+            title: document.getElementById('book-title-input').value,
+            authorId: document.getElementById('book-author-select').value,
+            genresId: Array.from(document.getElementById('book-genres-select').selectedOptions)
+                .map(option => option.value)
+        };
+
+        fetch(`/api/v1/books/${formData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(JSON.stringify(data));
+                });
+            }
+            return response.json();
+        })
+        .then(() => {
+            // Очищаем все сообщения об ошибках
+            clearErrorMessages();
+            // Редирект на главную страницу
+            window.location.href = '/';
+        })
+        .catch(error => {
+            console.error('Save error:', error);
+            try {
+                // Пытаемся разобрать JSON ошибки
+                const errorData = JSON.parse(error.message);
+                console.log("Parsed error data:", errorData);
+                displayFieldErrors(errorData);
+            } catch (e) {
+                // Если ошибка не JSON, показываем общее сообщение
+                errorMessage.textContent = `Save failed: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        });
+    }
+
+    // Очищает все сообщения об ошибках
+    function clearErrorMessages() {
+        document.getElementById('title-error').style.display = 'none';
+        document.getElementById('genres-error').style.display = 'none';
+        errorMessage.style.display = 'none';
+    }
+
+    // Отображает ошибки для конкретных полей
+    function displayFieldErrors(errorData) {
+        clearErrorMessages();
+
+        if (errorData.errors) {
+            // Если сервер вернул структурированные ошибки по полям
+            Object.keys(errorData.errors).forEach(field => {
+                const errorMsg = errorData.errors[field];
+                const errorElement = document.getElementById(`${field}-error`);
+
+                if (errorElement) {
+                    errorElement.textContent = errorMsg;
+                    errorElement.style.display = 'block';
                 }
             });
+        } else {
+            // Если общая ошибка без разбивки по полям
+            errorMessage.textContent = errorData.message || 'Validation failed';
+            errorMessage.style.display = 'block';
         }
+    }
 
-        // Обработчик кнопки "Save"
-        saveButton.addEventListener('click', saveBook);
+    // Обработчик кнопки "Save"
+    saveButton.addEventListener('click', saveBook);
 
-        // Загружаем книгу при открытии страницы
-        loadBook();
-    });
+    // Загружаем книгу при открытии страницы
+    loadBook();
+});
+
 </script>
 
 </body>
