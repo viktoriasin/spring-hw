@@ -1,13 +1,12 @@
 package ru.otus.hw.rest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.otus.hw.forms.BookForm;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.exceptions.NotFoundException;
 import ru.otus.hw.services.AuthorService;
@@ -15,6 +14,7 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -32,6 +32,34 @@ public class BookRestController {
             throw new NotFoundException();
         }
         return books;
+    }
+
+    @GetMapping("/api/v1/books/{id}")
+    public ResponseEntity<BookDto> getBook(@PathVariable("id") long id) {
+        Optional<BookDto> book = bookService.findById(id);
+
+        if (book.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return ResponseEntity.ok(book.get());
+    }
+
+    @PutMapping("/api/v1/books/{id}")
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
+                                              @Valid @RequestBody BookForm bookForm
+    ) {
+        if (!id.equals(bookForm.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        BookDto updatedBook = bookService.update(
+            id,
+            bookForm.getTitle(),
+            bookForm.getAuthorId(),
+            bookForm.getGenresId()
+        );
+
+        return ResponseEntity.ok(updatedBook);
     }
 
 
