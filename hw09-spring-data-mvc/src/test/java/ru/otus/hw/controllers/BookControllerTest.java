@@ -17,6 +17,7 @@ import ru.otus.hw.services.GenreService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,10 +45,10 @@ class BookControllerTest {
         new BookDto(2L, "Title2", new AuthorDto(2L, "Author2"), List.of(new GenreDto(2L, "Genre2")))
     );
     BookDto bookDto = books.get(0);
-    BookForm bookForm = new BookForm(String.valueOf(bookDto.getId()),
+    BookForm bookForm = new BookForm(bookDto.getId(),
         bookDto.getTitle(),
-        String.valueOf(bookDto.getAuthor().getId()),
-        bookDto.getGenres().stream().map(GenreDto::getId).map(String::valueOf).toList());
+        bookDto.getAuthor().getId(),
+        bookDto.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
     private List<GenreDto> genres = List.of(
         books.get(0).getGenres().get(0),
         books.get(1).getGenres().get(0)

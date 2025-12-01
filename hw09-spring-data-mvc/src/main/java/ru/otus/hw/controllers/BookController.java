@@ -19,7 +19,9 @@ import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,13 +46,12 @@ public class BookController {
         BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
 
         BookForm bookForm = new BookForm();
-        bookForm.setId(String.valueOf(bookDto.getId()));
+        bookForm.setId(bookDto.getId());
         bookForm.setTitle(bookDto.getTitle());
-        bookForm.setAuthorId(String.valueOf(bookDto.getAuthor().getId()));
-        List<String> genreIds = bookDto.getGenres().stream()
+        bookForm.setAuthorId(bookDto.getAuthor().getId());
+        Set<Long> genreIds = bookDto.getGenres().stream()
             .map(GenreDto::getId)
-            .map(String::valueOf)
-            .toList();
+            .collect(Collectors.toSet());
         bookForm.setGenresId(genreIds);
 
         fillModel(model, genreService.findAll(), authorService.findAll(), bookForm);
@@ -68,10 +69,8 @@ public class BookController {
             return "bookEdit";
         }
 
-        bookService.update(Long.parseLong(bookForm.getId()), bookForm.getTitle(), Long.parseLong(bookForm.getAuthorId()),
-            bookForm.getGenresId().stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toSet()));
+        bookService.update(bookForm.getId(), bookForm.getTitle(), bookForm.getAuthorId(),
+            new HashSet<>(bookForm.getGenresId()));
         return "redirect:/";
     }
 
@@ -92,10 +91,8 @@ public class BookController {
             return "bookCreate";
         }
 
-        bookService.insert(bookForm.getTitle(), Long.parseLong(bookForm.getAuthorId()),
-            bookForm.getGenresId().stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toSet()));
+        bookService.insert(bookForm.getTitle(), bookForm.getAuthorId(),
+            new HashSet<>(bookForm.getGenresId()));
         return "redirect:/";
     }
 

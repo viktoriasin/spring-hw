@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,14 +14,15 @@ import java.util.List;
 @EqualsAndHashCode
 public class BookForm {
 
-    private String id;
+    private Long id;
 
     @NotBlank(message = "{title-field-should-not-be-blank}")
     @Size(min = 2, max = 50, message = "{title-field-should-has-expected-size}")
     private String title;
 
-    private String authorId;
+    @NonNull
+    private Long authorId;
 
     @NotEmpty(message = "{genres-field-should-not-be-empty}")
-    private List<String> genresId;
+    private Set<@NonNull Long> genresId;
 }

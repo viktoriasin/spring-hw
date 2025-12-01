@@ -8,13 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
-import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.forms.BookForm;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Controller
