@@ -2,7 +2,11 @@ package ru.otus.hw.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.exceptions.NotFoundException;
@@ -28,6 +32,14 @@ public class BookRestController {
             throw new NotFoundException();
         }
         return books;
+    }
+
+
+    @DeleteMapping("/api/v1/books/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable("id") long id) {
+        bookService.findById(id).orElseThrow(NotFoundException::new);
+        bookService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 //
 //    @GetMapping("/edit")

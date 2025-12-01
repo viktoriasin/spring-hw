@@ -97,46 +97,42 @@
 </div>
 
 <script>
+
   document.addEventListener('DOMContentLoaded', function() {
       const tbody = document.getElementById('books-tbody');
       const loadingMessage = document.getElementById('loading-message');
       const errorMessage = document.getElementById('error-message');
 
-      // Функция для загрузки книг
       function loadBooks() {
           fetch('/api/v1/books')
               .then(response => {
-                  if (!response.ok) {
-                      throw new Error(`HTTP error# Status: ${response.status}`);
-                  }
+                  if (!response.ok) throw new Error(`HTTP error# Status: ${response.status}`);
                   return response.json();
               })
               .then(books => {
-                  // Очищаем таблицу
                   tbody.innerHTML = '';
-
-                  // Заполняем таблицу данными
                   books.forEach(book => {
                       const row = document.createElement('tr');
-
                       row.innerHTML = `
                           <td>${book.id}</td>
                           <td>${book.title || ''}</td>
                           <td>${book.author?.fullName || 'Unknown'}</td>
                           <td>${book.genres?.map(g => g.name).join(', ') || 'No genres'}</td>
-                          <td>
-                              <a href="/comments?bookId=${book.id}">Comments</a>
-                          </td>
+                          <td><a href="/comments?bookId=${book.id}">Comments</a></td>
                           <td>
                               <a href="/edit?id=${book.id}" class="action-link">Edit</a> |
-                              <a href="#" onclick="deleteBook(${book.id})" class="action-link" style="color: red;">Delete</a>
+                              <a href="#" data-book-id="${book.id}" class="delete-link action-link" style="color: red;">Delete</a>
                           </td>
                       `;
-
                       tbody.appendChild(row);
-                  });
 
-                  // Скрываем сообщение о загрузке
+                      // Привязываем обработчик к ссылке "Delete"
+                      row.querySelector('.delete-link').addEventListener('click', function(event) {
+                          event.preventDefault();
+                          const bookId = this.getAttribute('data-book-id');
+                          deleteBook(bookId);
+                      });
+                  });
                   loadingMessage.style.display = 'none';
               })
               .catch(error => {
@@ -147,17 +143,12 @@
               });
       }
 
-      // Функция для удаления книги
       function deleteBook(id) {
-          if (!confirm(`Are you sure you want to delete book #${id}?`)) {
-              return;
-          }
+          if (!confirm(`Are you sure you want to delete book #${id}?`)) return;
 
           fetch(`/api/v1/books/${id}`, {
               method: 'DELETE',
-              headers: {
-                  'Content-Type': 'application/json'
-              }
+              headers: { 'Content-Type': 'application/json' }
           })
           .then(response => {
               if (response.ok) {
@@ -172,7 +163,6 @@
           });
       }
 
-      // Загружаем книги при открытии страницы
       loadBooks();
   });
 </script>
