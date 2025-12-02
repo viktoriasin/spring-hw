@@ -6,12 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
-import ru.otus.hw.converters.AuthorConverter;
-import ru.otus.hw.converters.BookConverter;
-import ru.otus.hw.converters.GenreConverter;
-import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
+import ru.otus.hw.rest.dto.BookDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,12 +48,11 @@ class BookServiceTest {
     @Test
     void findAll() {
         List<BookDto> allBooks = bookService.findAll();
-        BookConverter bookConverter = new BookConverter(new AuthorConverter(), new GenreConverter());
         List<BookDto> allExpectedBook = em.getEntityManager().createQuery("""
             select b
             from Book b
             left join b.author a
-            """, Book.class).getResultList().stream().map(bookConverter::bookToDto).toList();
+            """, Book.class).getResultList().stream().map(BookDto::toDto).toList();
 
         assertThat(allBooks).containsExactlyInAnyOrderElementsOf(allExpectedBook);
 
