@@ -22,9 +22,9 @@ public class CommentController {
     private final BookService bookService;
 
     @GetMapping("/comments")
-    public String editBookPage(@RequestParam("bookId") long id, Model model) {
+    public String getCommentsPage(@RequestParam("bookId") long id, Model model) {
         List<CommentDto> comments = commentService.findByBookId(id);
-        BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
+        BookDto bookDto = bookService.findById(id);
 
         model.addAttribute("book", bookDto);
         model.addAttribute("comments", comments);

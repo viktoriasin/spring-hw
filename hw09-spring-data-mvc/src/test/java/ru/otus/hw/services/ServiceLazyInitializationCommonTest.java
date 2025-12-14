@@ -9,8 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +43,8 @@ public class ServiceLazyInitializationCommonTest {
         "вне метода сервиса")
     @Test
     void shouldNotThrowLazyExceptionOutOfBookService() {
-        Optional<BookDto> book = bookService.findById(1L);
-        assertThatCode(() -> book.ifPresent(b -> b.getGenres().stream().map(GenreDto::getName)))
+        BookDto book = bookService.findById(1L);
+        assertThatCode(() -> book.getGenres().stream().map(GenreDto::getName))
             .doesNotThrowAnyException();
 
         List<BookDto> books = bookService.findAll();

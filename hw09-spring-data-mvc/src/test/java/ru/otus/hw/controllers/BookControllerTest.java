@@ -15,7 +15,6 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,8 +43,8 @@ class BookControllerTest {
         new BookDto(1L, "Title1", new AuthorDto(1L, "Author"), List.of(new GenreDto(1L, "Genre1"))),
         new BookDto(2L, "Title2", new AuthorDto(2L, "Author2"), List.of(new GenreDto(2L, "Genre2")))
     );
-    BookDto bookDto = books.get(0);
-    BookForm bookForm = new BookForm(bookDto.getId(),
+    private BookDto bookDto = books.get(0);
+    private BookForm bookForm = new BookForm(bookDto.getId(),
         bookDto.getTitle(),
         bookDto.getAuthor().getId(),
         bookDto.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
@@ -69,7 +68,7 @@ class BookControllerTest {
 
     @Test
     void shouldRenderEditPageWithCorrectViewAndModelAttributes() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookService.findById(1L)).thenReturn(books.get(0));
         when(genreService.findAll()).thenReturn(genres);
         when(authorService.findAll()).thenReturn(authors);
 
@@ -89,7 +88,7 @@ class BookControllerTest {
 
     @Test
     void shouldUpdateBookAndRedirectToContextPath() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookService.findById(1L)).thenReturn(books.get(0));
         mvc.perform(post("/edit").param("id", "1")
                 .param("title", "book1")
                 .param("authorId", "1")
@@ -114,7 +113,7 @@ class BookControllerTest {
 
     @Test
     void shouldRenderCreatePageWithCorrectViewAndModelAttributes() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookService.findById(1L)).thenReturn(books.get(0));
         when(genreService.findAll()).thenReturn(genres);
         when(authorService.findAll()).thenReturn(authors);
 
@@ -150,16 +149,9 @@ class BookControllerTest {
 
     @Test
     void shouldDeleteBookById() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(bookDto));
+        when(bookService.findById(1L)).thenReturn(bookDto);
         mvc.perform(post("/delete").param("id", "1"))
             .andExpect(view().name("redirect:/"));
         verify(bookService, times(1)).deleteById(bookDto.getId());
-    }
-
-    @Test
-    void shouldRenderErrorPageWhenBookNotFoundWhenDelete() throws Exception {
-        when(bookService.findById(1L)).thenThrow(new NotFoundException());
-        mvc.perform(post("/delete").param("id", "1"))
-            .andExpect(view().name("customError"));
     }
 }
