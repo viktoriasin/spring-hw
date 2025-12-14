@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.otus.hw.rest.exceptions.NotFoundException;
+import ru.otus.hw.rest.exceptions.EntityNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
 
     public static final String ERROR_STRING = "No book are found.";
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handeNotFoundException(NotFoundException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handeNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity.status(404).body(ERROR_STRING);
     }
 

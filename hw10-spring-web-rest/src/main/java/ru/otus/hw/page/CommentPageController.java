@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.rest.exceptions.NotFoundException;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.dto.CommentDto;
 import ru.otus.hw.services.BookService;
@@ -25,7 +24,7 @@ public class CommentPageController {
     @GetMapping("/comments")
     public String editBookPage(@RequestParam("bookId") long id, Model model) {
         List<CommentDto> comments = commentService.findByBookId(id);
-        BookDto bookDto = bookService.findById(id).orElseThrow(NotFoundException::new);
+        BookDto bookDto = bookService.findById(id);
 
         model.addAttribute("book", bookDto);
         model.addAttribute("comments", comments);

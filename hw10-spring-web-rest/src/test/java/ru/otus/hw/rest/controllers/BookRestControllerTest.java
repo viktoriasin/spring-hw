@@ -12,12 +12,12 @@ import ru.otus.hw.forms.BookForm;
 import ru.otus.hw.rest.dto.AuthorDto;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.dto.GenreDto;
+import ru.otus.hw.rest.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.mockito.BDDMockito.given;
@@ -76,7 +76,7 @@ class BookRestControllerTest {
 
     @Test
     void shouldReturnBookById() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(bookDto));
+        when(bookService.findById(1L)).thenReturn(bookDto);
         String expectedResult = mapper.writeValueAsString(bookDto);
         mvc.perform(get("/api/v1/books/1"))
             .andExpect(status().isOk())
@@ -86,7 +86,7 @@ class BookRestControllerTest {
 
     @Test
     void shouldUpdateBookById() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(bookDto));
+        when(bookService.findById(1L)).thenReturn(bookDto);
         when(bookService.update(ArgumentMatchers.anyLong(), ArgumentMatchers.any(),
             ArgumentMatchers.anyLong(), ArgumentMatchers.any())).thenReturn(bookDto);
         String expectedResult = mapper.writeValueAsString(books.get(0));
@@ -107,7 +107,7 @@ class BookRestControllerTest {
 
     @Test
     void shouldReturnErrorStringWhenBookNotFound() throws Exception {
-        given(bookService.findById(1L)).willReturn(Optional.empty());
+        given(bookService.findById(1L)).willThrow(EntityNotFoundException.class);
         mvc.perform(get("/api/v1/books/1"))
             .andExpect(status().isNotFound())
             .andExpect(content().string(ERROR_STRING));
@@ -115,12 +115,10 @@ class BookRestControllerTest {
 
     @Test
     void shouldCallDeleteServiceMethodWhenDeletingBook() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(bookDto));
 
         mvc.perform(delete("/api/v1/books/1"))
             .andExpect(status().isOk());
         verify(bookService, times(1)).deleteById(1L);
-        verify(bookService, times(1)).findById(1L);
     }
 
     @Test

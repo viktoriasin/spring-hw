@@ -13,7 +13,6 @@ import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.exceptions.EntityNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -29,9 +28,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<BookDto> findById(long id) {
-        Optional<Book> bookOptional = bookRepository.findById(id);
-        return bookOptional.map(BookDto::toDto);
+    public BookDto findById(long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found"));
+        return BookDto.toDto(book);
     }
 
     @Override

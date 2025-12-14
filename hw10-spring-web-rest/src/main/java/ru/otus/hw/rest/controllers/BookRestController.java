@@ -15,7 +15,6 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -37,12 +36,9 @@ public class BookRestController {
 
     @GetMapping("/api/v1/books/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable("id") long id) {
-        Optional<BookDto> book = bookService.findById(id);
+        BookDto book = bookService.findById(id);
 
-        if (book.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return ResponseEntity.ok(book.get());
+        return ResponseEntity.ok(book);
     }
 
     @PutMapping("/api/v1/books/{id}")
@@ -66,7 +62,6 @@ public class BookRestController {
 
     @DeleteMapping("/api/v1/books/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable("id") long id) {
-        bookService.findById(id).orElseThrow(NotFoundException::new);
         bookService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

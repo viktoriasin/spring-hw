@@ -43,8 +43,8 @@ public class ServiceLazyInitializationCommonTest {
         "вне метода сервиса")
     @Test
     void shouldNotThrowLazyExceptionOutOfBookService() {
-        Optional<BookDto> book = bookService.findById(1L);
-        assertThatCode(() -> book.ifPresent(b -> b.getGenres().stream().map(GenreDto::getName)))
+        BookDto book = bookService.findById(1L);
+        assertThatCode(() -> book.getGenres().stream().map(GenreDto::getName))
             .doesNotThrowAnyException();
 
         List<BookDto> books = bookService.findAll();
