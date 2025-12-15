@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class BookServiceTest {
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @Autowired
     private TestEntityManager em;

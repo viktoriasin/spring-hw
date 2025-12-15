@@ -81,7 +81,7 @@ class BookControllerTest {
 
     @Test
     void shouldRenderErrorPageWhenBookNotFound() throws Exception {
-        when(bookService.findById(1L)).thenThrow(new NotFoundException());
+        when(bookService.findById(1L)).thenThrow(new BookNotFoundException());
         mvc.perform(get("/edit").param("id", "1"))
             .andExpect(view().name("customError"));
     }
