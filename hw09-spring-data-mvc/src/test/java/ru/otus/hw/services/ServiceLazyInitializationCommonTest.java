@@ -1,16 +1,15 @@
 package ru.otus.hw.services;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,14 +18,14 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 @DataJpaTest
 @ComponentScan({"ru.otus.hw.repositories", "ru.otus.hw.services", "ru.otus.hw.converters"})
-@Transactional(Transactional.TxType.NEVER)
+@Transactional(propagation = Propagation.NEVER) // аналог из jakarta: @Transactional(Transactional.TxType.NEVER)
 public class ServiceLazyInitializationCommonTest {
 
     @Autowired
-    CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @DisplayName("Не должно возникать ошибки LazyInitialization при обращении к полям комментария " +
         "вне метода сервиса")
@@ -45,8 +44,8 @@ public class ServiceLazyInitializationCommonTest {
         "вне метода сервиса")
     @Test
     void shouldNotThrowLazyExceptionOutOfBookService() {
-        Optional<BookDto> book = bookService.findById(1L);
-        assertThatCode(() -> book.ifPresent(b -> b.getGenres().stream().map(GenreDto::getName)))
+        BookDto book = bookService.findById(1L);
+        assertThatCode(() -> book.getGenres().stream().map(GenreDto::getName))
             .doesNotThrowAnyException();
 
         List<BookDto> books = bookService.findAll();

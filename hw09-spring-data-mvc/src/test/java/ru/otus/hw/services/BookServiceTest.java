@@ -12,16 +12,15 @@ import ru.otus.hw.converters.GenreConverter;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.services.BookService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DataJpaTest
 @ComponentScan({"ru.otus.hw.repositories", "ru.otus.hw.services", "ru.otus.hw.converters"})
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookServiceTest {
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @Autowired
     private TestEntityManager em;
@@ -37,13 +36,13 @@ class BookServiceTest {
     @Test
     void findById() {
         long id = 1;
-        Optional<BookDto> book = bookService.findById(id);
+        BookDto book = bookService.findById(id);
 
-        assertTrue(book.isPresent());
+        assertNotNull(book);
 
         Book expectedBook = em.find(Book.class, id);
 
-        assertThat(book.get())
+        assertThat(book)
             .usingRecursiveComparison()
             .ignoringExpectedNullFields()
             .isEqualTo(expectedBook);

@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handeNotFoundException(NotFoundException ex) {
+    @ExceptionHandler(BookNotFoundException.class)
+    public ModelAndView handleNotFoundException(BookNotFoundException ex) {
         return new ModelAndView("customError", "errorText", "Book not found");
     }
 
