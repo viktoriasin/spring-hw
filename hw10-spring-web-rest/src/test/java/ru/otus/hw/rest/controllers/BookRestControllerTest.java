@@ -12,7 +12,7 @@ import ru.otus.hw.forms.BookForm;
 import ru.otus.hw.rest.dto.AuthorDto;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.dto.GenreDto;
-import ru.otus.hw.rest.exceptions.EntityNotFoundException;
+import ru.otus.hw.rest.exceptions.BookNotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -107,7 +107,7 @@ class BookRestControllerTest {
 
     @Test
     void shouldReturnErrorStringWhenBookNotFound() throws Exception {
-        given(bookService.findById(1L)).willThrow(EntityNotFoundException.class);
+        given(bookService.findById(1L)).willThrow(BookNotFoundException.class);
         mvc.perform(get("/api/v1/books/1"))
             .andExpect(status().isNotFound())
             .andExpect(content().string(ERROR_STRING));

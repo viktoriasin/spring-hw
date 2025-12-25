@@ -10,7 +10,7 @@ import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.rest.dto.BookDto;
-import ru.otus.hw.rest.exceptions.EntityNotFoundException;
+import ru.otus.hw.rest.exceptions.BookNotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public BookDto findById(long id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found"));
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Not found"));
         return BookDto.toDto(book);
     }
 
@@ -51,7 +51,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto update(long id, String title, long authorId, Set<Long> genresIds) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There is no book with id %s to update".formatted(id)));
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("There is no book with id %s to update".formatted(id)));
 
         return BookDto.toDto(save(book, title, authorId, genresIds));
     }
@@ -75,7 +75,7 @@ public class BookServiceImpl implements BookService {
 
     private Author getAuthorById(long authorId) {
         return authorRepository.findById(authorId).orElseThrow(
-            () -> new EntityNotFoundException(
+            () -> new BookNotFoundException(
                 "There is no author with id %s".formatted(authorId)));
     }
 
@@ -87,7 +87,7 @@ public class BookServiceImpl implements BookService {
         List<Genre> genres = genreRepository.findAllById(genresIds);
 
         if (isEmpty(genres) || genresIds.size() != genres.size()) {
-            throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
+            throw new BookNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
         }
 
         return genres;

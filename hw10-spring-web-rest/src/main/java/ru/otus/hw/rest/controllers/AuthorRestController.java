@@ -21,7 +21,7 @@ public class AuthorRestController {
         List<AuthorDto> authors = authorService.findAll();
 
         if (authors.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("Authors");
         }
         return authors;
     }

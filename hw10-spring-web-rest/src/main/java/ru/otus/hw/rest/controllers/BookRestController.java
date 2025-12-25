@@ -29,7 +29,7 @@ public class BookRestController {
         List<BookDto> books = bookService.findAll();
 
         if (books.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("Books");
         }
         return books;
     }

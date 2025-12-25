@@ -21,7 +21,7 @@ public class GenresRestControllers {
         List<GenreDto> genres = genreService.findAll();
 
         if (genres.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("Genres");
         }
         return genres;
     }

@@ -8,7 +8,7 @@ import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.rest.dto.CommentDto;
-import ru.otus.hw.rest.exceptions.EntityNotFoundException;
+import ru.otus.hw.rest.exceptions.BookNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDto insert(String text, Book book) {
         if (bookRepository.findById(book.getId()).isEmpty()) {
-            throw new EntityNotFoundException("Book with id %d for saving comment is not found!".formatted(book.getId()));
+            throw new BookNotFoundException("Book with id %d for saving comment is not found!".formatted(book.getId()));
         }
         return CommentDto.toDto(commentRepository.save(new Comment(0, text, book)));
     }
@@ -48,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDto update(long id, String text) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Comment with id %d is not found!".formatted(id)));
+            () -> new BookNotFoundException("Comment with id %d is not found!".formatted(id)));
         comment.setText(text);
         return CommentDto.toDto(commentRepository.save(comment));
     }
