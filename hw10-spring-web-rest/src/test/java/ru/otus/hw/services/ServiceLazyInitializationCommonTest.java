@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 public class ServiceLazyInitializationCommonTest {
 
     @Autowired
-    CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @DisplayName("Не должно возникать ошибки LazyInitialization при обращении к полям комментария " +
         "вне метода сервиса")

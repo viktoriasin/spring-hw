@@ -22,7 +22,7 @@ public class CommentPageController {
     private final BookService bookService;
 
     @GetMapping("/comments")
-    public String editBookPage(@RequestParam("bookId") long id, Model model) {
+    public String bookWithCommentsPage(@RequestParam("bookId") long id, Model model) {
         List<CommentDto> comments = commentService.findByBookId(id);
         BookDto bookDto = bookService.findById(id);
 

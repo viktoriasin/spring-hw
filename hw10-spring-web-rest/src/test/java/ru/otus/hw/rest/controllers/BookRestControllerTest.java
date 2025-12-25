@@ -51,8 +51,8 @@ class BookRestControllerTest {
         books.get(0).getGenres().get(0),
         books.get(1).getGenres().get(0)
     );
-    BookDto bookDto = books.get(0);
-    BookForm bookForm = new BookForm(bookDto.getId(),
+    private BookDto bookDto = books.get(0);
+    private BookForm bookForm = new BookForm(bookDto.getId(),
         bookDto.getTitle(),
         bookDto.getAuthor().getId(),
         bookDto.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
