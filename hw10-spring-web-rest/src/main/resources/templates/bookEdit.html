@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        h3 {
+            background-image: url("../static/listmark.png");
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+
+        .errors {
+            color: red;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+
+    <style type="text/css" th:inline="text">
+        [[h3]] {
+            background-image: url([[@{/listmark.png}]]);
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<h3>Book Edit</h3>
+
+
+<div id="loading-message" class="loading">Loading book data...</div>
+
+
+<div id="error-message" class="error-message" style="display: none;"></div>
+
+<form id="edit-form">
+    <div class="row">
+        <label for="id-input">ID:</label>
+        <input id="id-input" type="text" readonly="readonly" name="id"/>
+    </div>
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text"/>
+        <div class="errors" id="title-error" style="display: none;">Wrong book title error</div>
+    </div>
+
+    <div class="row">
+        <label for="book-author-select">Author:</label>
+        <select id="book-author-select" name="authorId">
+            <!-- Варианты будут загружены через JS -->
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="book-genres-select">Genres:</label>
+        <select id="book-genres-select" name="genreIds" multiple>
+            <!-- Варианты будут загружены через JS -->
+        </select>
+        <div class="errors" id="genres-error" style="display: none;">Wrong genres id error</div>
+    </div>
+
+    <div class="row">
+        <button type="button" id="save-button">Save</button>
+        <a href="bookList.html" th:href="@{/}"><button type="button">Cancel</button></a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-form');
+    const saveButton = document.getElementById('save-button');
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+
+    const bookId = new URLSearchParams(window.location.search).get('id');
+
+    if (!bookId) {
+        errorMessage.textContent = 'Book ID is missing!';
+        errorMessage.style.display = 'block';
+        loadingMessage.style.display = 'none';
+        return;
+    }
+
+    // Загружаем данные книги
+    function loadBook() {
+        fetch(`/api/v1/books/${bookId}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error# Status: ${response.status}`);
+                return response.json();
+            })
+            .then(book => {
+                populateForm(book);
+                loadingMessage.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error loading book:', error);
+                errorMessage.textContent = `Failed to load book: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+            });
+    }
+
+    // Заполняем форму данными
+    function populateForm(book) {
+        document.getElementById('id-input').value = book.id;
+        document.getElementById('book-title-input').value = book.title || '';
+
+        // Заполняем список авторов
+        const authorSelect = document.getElementById('book-author-select');
+        authorSelect.innerHTML = '';
+        fetch('/api/v1/authors')
+            .then(response => response.json())
+            .then(authors => {
+                authors.forEach(author => {
+                    const option = document.createElement('option');
+                    option.value = author.id;
+                    option.textContent = author.fullName;
+                    if (author.id === book.author?.id) {
+                        option.selected = true;
+                    }
+                    authorSelect.appendChild(option);
+                });
+            });
+
+        // Заполняем список жанров
+        const genreSelect = document.getElementById('book-genres-select');
+        genreSelect.innerHTML = '';
+        fetch('/api/v1/genres')
+            .then(response => response.json())
+            .then(genres => {
+                genres.forEach(genre => {
+                    const option = document.createElement('option');
+                    option.value = genre.id;
+                    option.textContent = genre.name;
+                    if (book.genres?.some(g => g.id === genre.id)) {
+                        option.selected = true;
+                    }
+                    genreSelect.appendChild(option);
+                });
+            });
+    }
+
+    // Сохраняем изменения
+    function saveBook() {
+        const formData = {
+            id: document.getElementById('id-input').value,
+            title: document.getElementById('book-title-input').value,
+            authorId: document.getElementById('book-author-select').value,
+            genresId: Array.from(document.getElementById('book-genres-select').selectedOptions)
+                .map(option => option.value)
+        };
+
+        fetch(`/api/v1/books/${formData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(JSON.stringify(data));
+                });
+            }
+            return response.json();
+        })
+        .then(() => {
+            // Очищаем все сообщения об ошибках
+            clearErrorMessages();
+            // Редирект на главную страницу
+            window.location.href = '/';
+        })
+        .catch(error => {
+            console.error('Save error:', error);
+            try {
+                // Пытаемся разобрать JSON ошибки
+                const errorData = JSON.parse(error.message);
+                console.log("Parsed error data:", errorData);
+                displayFieldErrors(errorData);
+            } catch (e) {
+                // Если ошибка не JSON, показываем общее сообщение
+                errorMessage.textContent = `Save failed: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        });
+    }
+
+    // Очищает все сообщения об ошибках
+    function clearErrorMessages() {
+        document.getElementById('title-error').style.display = 'none';
+        document.getElementById('genres-error').style.display = 'none';
+        errorMessage.style.display = 'none';
+    }
+
+    // Отображает ошибки для конкретных полей
+    function displayFieldErrors(errorData) {
+        clearErrorMessages();
+
+        if (errorData.errors) {
+            // Если сервер вернул структурированные ошибки по полям
+            Object.keys(errorData.errors).forEach(field => {
+                const errorMsg = errorData.errors[field];
+                const errorElement = document.getElementById(`${field}-error`);
+
+                if (errorElement) {
+                    errorElement.textContent = errorMsg;
+                    errorElement.style.display = 'block';
+                }
+            });
+        } else {
+            // Если общая ошибка без разбивки по полям
+            errorMessage.textContent = errorData.message || 'Validation failed';
+            errorMessage.style.display = 'block';
+        }
+    }
+
+    // Обработчик кнопки "Save"
+    saveButton.addEventListener('click', saveBook);
+
+    // Загружаем книгу при открытии страницы
+    loadBook();
+});
+
+</script>
+
+</body>
+</html>

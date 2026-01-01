@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8"/>
+  <title>Edit book</title>
+  <style type="text/css">
+    body {
+        padding: 50px;
+    }
+
+    label {
+        display: inline-block;
+        width: 100px;
+    }
+
+    input:read-only {
+        background: lightgray;
+    }
+
+    .row {
+        margin-top: 10px;
+    }
+
+    h3 {
+        background-image: url("../static/listmark.png");
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+
+    .errors {
+        color: red;
+    }
+
+    .loading {
+        color: #666;
+        font-style: italic;
+    }
+
+    .error-message {
+        color: red;
+        margin: 10px 0;
+    }
+  </style>
+
+  <style type="text/css" th:inline="text">
+    [[h3]] {
+        background-image: url([[@{/listmark.png}]]);
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<h3>Create New Book</h3>
+
+<form id="create-form">
+  <div class="row">
+    <label for="title">Title:</label>
+    <input type="text" id="title" placeholder="Enter book title">
+    <div class="errors" id="title-error"></div>
+  </div>
+
+  <div class="row">
+    <label for="author">Author:</label>
+    <select id="author">
+      <option value="">-- Select author --</option>
+    </select>
+    <div class="errors" id="author-error"></div>
+  </div>
+
+  <div class="row">
+    <label for="genres">Genres:</label>
+    <select id="genres" multiple>
+      <option value="">-- Select genres --</option>
+    </select>
+    <div class="errors" id="genres-error"></div>
+  </div>
+
+  <div class="row">
+    <button type="button" id="save-btn">Save</button>
+    <a href="/"><button type="button" class="cancel-btn">Cancel</button></a>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.getElementById('save-btn');
+
+    const titleError = document.getElementById('title-error');
+    const genresError = document.getElementById('genres-error');
+
+    function clearErrors() {
+      titleError.style.display = 'none';
+      genresError.style.display = 'none';
+    }
+
+    function showValidationErrors(errors) {
+      clearErrors();
+      if (errors.title) {
+        titleError.textContent = errors.title;
+        titleError.style.display = 'block';
+      }
+      if (errors.genresId) {
+        genresError.textContent = errors.genresId;
+        genresError.style.display = 'block';
+      }
+    }
+
+    function loadAuthors() {
+      fetch('/api/v1/authors')
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to load authors');
+          }
+          return response.json();
+        })
+        .then(function(authors) {
+          const select = document.getElementById('author');
+          select.innerHTML = '<option value="">-- Select author --</option>';
+          authors.forEach(function(author) {
+            const option = document.createElement('option');
+            option.value = author.id;
+            option.textContent = author.fullName;
+            select.appendChild(option);
+          });
+        })
+        .catch(function(error) {
+          console.error('Error loading authors:', error);
+          authorError.textContent = 'Failed to load authors. Please refresh.';
+          authorError.style.display = 'block';
+        });
+    }
+
+    function loadGenres() {
+      fetch('/api/v1/genres')
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Failed to load genres');
+          }
+          return response.json();
+        })
+        .then(function(genres) {
+          const select = document.getElementById('genres');
+          select.innerHTML = '';
+          genres.forEach(function(genre) {
+            const option = document.createElement('option');
+            option.value = genre.id;
+            option.textContent = genre.name;
+            select.appendChild(option);
+          });
+        })
+        .catch(function(error) {
+          console.error('Error loading genres:', error);
+          genresError.textContent = 'Failed to load genres. Please refresh.';
+          genresError.style.display = 'block';
+        });
+    }
+
+    function getFormData() {
+      return {
+        title: document.getElementById('title').value,
+        authorId: document.getElementById('author').value,
+        genresId: Array.from(
+          document.getElementById('genres').selectedOptions
+        ).map(function(opt) {
+          return opt.value;
+        })
+      };
+    }
+
+    // Отправка формы
+    function submitBook() {
+      const data = getFormData();
+
+      fetch('/api/v1/books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(function(response) {
+        if (response.status === 400) {
+          return response.json().then(function(errorData) {
+            showValidationErrors(errorData.errors || {});
+          });
+        }
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        window.location.href = '/';
+      })
+      .catch(function(error) {
+        console.error('Submission error:', error);
+        titleError.textContent = 'Network error. Check connection and try again.';
+        titleError.style.display = 'block';
+      });
+    }
+
+  saveBtn.addEventListener('click', function() {
+    submitBook();
+  });
+
+  loadAuthors();
+  loadGenres();
+});
+</script>
+</body>
+</html>

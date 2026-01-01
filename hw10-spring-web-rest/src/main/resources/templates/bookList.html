@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>List books</title>
+  <style type="text/css">
+    body {
+        padding: 50px;
+    }
+
+    table, th, td {
+      border: 1px solid green;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    .row {
+        margin-top: 10px;
+    }
+
+    h3 {
+        background-image: url("../static/listmark.png");
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+
+    .errors {
+        color: red;
+    }
+
+    .loading {
+        color: #666;
+        font-style: italic;
+    }
+
+    .error-message {
+        color: red;
+        margin: 10px 0;
+    }
+  </style>
+
+  <style type="text/css" th:inline="text">
+    [[h3]] {
+        background-image: url([[@{/listmark.png}]]);
+        background-repeat: no-repeat;
+        padding: 2px;
+        padding-left: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<h3>Books list</h3>
+
+<!-- Сообщение о загрузке -->
+<div id="loading-message" class="loading">Loading books...</div>
+
+<!-- Сообщение об ошибке -->
+<div id="error-message" class="error-message" style="display: none;"></div>
+
+<!-- Таблица книг -->
+<table class="books" id="books-table">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Genres</th>
+    <th>Comments</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody id="books-tbody">
+  <!-- Здесь будут динамически добавлены строки -->
+  </tbody>
+</table>
+
+<div class="row">
+  <a href="bookCreate.html" th:href="@{/create}"><button type="button">Create new book</button></a>
+</div>
+
+<div class="row">
+  <a href="" th:href="@{/}"><button type="button">Go to main page</button></a>
+</div>
+
+<div class="row">
+  <a href="" th:href="@{/genres}"><button type="button">All genres</button></a>
+</div>
+
+<div class="row">
+  <a href="" th:href="@{/authors}"><button type="button">All authors</button></a>
+</div>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+      const tbody = document.getElementById('books-tbody');
+      const loadingMessage = document.getElementById('loading-message');
+      const errorMessage = document.getElementById('error-message');
+
+      function loadBooks() {
+          fetch('/api/v1/books')
+              .then(response => {
+                  if (!response.ok) throw new Error(`HTTP error# Status: ${response.status}`);
+                  return response.json();
+              })
+              .then(books => {
+                  tbody.innerHTML = '';
+                  books.forEach(book => {
+                      const row = document.createElement('tr');
+                      row.innerHTML = `
+                          <td>${book.id}</td>
+                          <td>${book.title || ''}</td>
+                          <td>${book.author?.fullName || 'Unknown'}</td>
+                          <td>${book.genres?.map(g => g.name).join(', ') || 'No genres'}</td>
+                          <td><a href="/comments?bookId=${book.id}">Comments</a></td>
+                          <td>
+                              <a href="/edit?id=${book.id}" class="action-link">Edit</a> |
+                              <a href="#" data-book-id="${book.id}" class="delete-link action-link" style="color: red;">Delete</a>
+                          </td>
+                      `;
+                      tbody.appendChild(row);
+
+                      // Привязываем обработчик к ссылке "Delete"
+                      row.querySelector('.delete-link').addEventListener('click', function(event) {
+                          event.preventDefault();
+                          const bookId = this.getAttribute('data-book-id');
+                          deleteBook(bookId);
+                      });
+                  });
+                  loadingMessage.style.display = 'none';
+              })
+              .catch(error => {
+                  console.error('Error loading books:', error);
+                  loadingMessage.style.display = 'none';
+                  errorMessage.textContent = `Failed to load books: ${error.message}`;
+                  errorMessage.style.display = 'block';
+              });
+      }
+
+      function deleteBook(id) {
+          if (!confirm(`Are you sure you want to delete book #${id}?`)) return;
+
+          fetch(`/api/v1/books/${id}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+          })
+          .then(response => {
+              if (response.ok) {
+                  alert('Book deleted successfully!');
+                  loadBooks(); // Обновляем список
+              } else {
+                  throw new Error('Delete failed');
+              }
+          })
+          .catch(error => {
+              alert(`Delete failed: ${error.message}`);
+          });
+      }
+
+      loadBooks();
+  });
+</script>
+
+</body>
+</html>
