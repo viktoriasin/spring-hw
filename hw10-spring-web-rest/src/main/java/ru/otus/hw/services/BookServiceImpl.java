@@ -11,6 +11,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.rest.exceptions.BookNotFoundException;
+import ru.otus.hw.rest.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,10 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public List<BookDto> findAll() {
         List<Book> books = bookRepository.findAll();
+
+        if (books.isEmpty()) {
+            throw new NotFoundException("Books");
+        }
         return books.stream().map(BookDto::toDto).toList();
     }
 

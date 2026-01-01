@@ -1,6 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -21,11 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DataJpaTest
 @ComponentScan({"ru.otus.hw.repositories", "ru.otus.hw.services", "ru.otus.hw.converters"})
-@Transactional(Transactional.TxType.NEVER)
 class BookServiceTest {
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @Autowired
     private TestEntityManager em;

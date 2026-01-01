@@ -8,10 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.forms.BookForm;
 import ru.otus.hw.rest.dto.BookDto;
-import ru.otus.hw.rest.exceptions.NotFoundException;
-import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.GenreService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,17 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookRestController {
     private final BookService bookService;
-    private final GenreService genreService;
-    private final AuthorService authorService;
 
     @GetMapping("/api/v1/books")
     public List<BookDto> listAllBookPage() {
-        List<BookDto> books = bookService.findAll();
-
-        if (books.isEmpty()) {
-            throw new NotFoundException("Books");
-        }
-        return books;
+        return bookService.findAll();
     }
 
     @GetMapping("/api/v1/books/{id}")
@@ -58,7 +48,6 @@ public class BookRestController {
 
         return ResponseEntity.ok(updatedBook);
     }
-
 
     @DeleteMapping("/api/v1/books/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable("id") long id) {
